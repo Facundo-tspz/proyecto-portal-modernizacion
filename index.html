@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Portal oficial de la Dirección de Modernización de la Municipalidad de Tinogasta. Proyectos, capacitaciones y soporte técnico."
+    />
+    <title>Dirección de Modernización — Tinogasta</title>
+    <script>
+      ;(function () {
+        const temaGuardado = localStorage.getItem('tema')
+        const prefiereOscuro = window.matchMedia('(prefers-color-scheme: dark)').matches
+        const esOscuro = temaGuardado === 'oscuro' || (!temaGuardado && prefiereOscuro)
+        const html = document.documentElement
+        if (esOscuro) {
+          html.classList.add('dark')
+          html.setAttribute('data-theme', 'modernizacion-dark')
+        } else {
+          html.setAttribute('data-theme', 'modernizacion')
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
