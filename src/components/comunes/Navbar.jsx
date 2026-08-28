@@ -16,6 +16,9 @@ const enlacesProyectos = [
   { nombre: 'En desarrollo', ruta: '/proyectos?estado=en_desarrollo' },
 ]
 
+const claseSubrayado =
+  "after:content-[''] after:absolute after:-bottom-0.5 after:inset-x-0 after:h-0.5 after:rounded-full after:bg-gradient-to-r after:from-municipal-verde after:to-municipal-naranja after:transition-opacity"
+
 function DropdownNav({ etiqueta, enlaces }) {
   const [abierto, setAbierto] = useState(false)
 
@@ -39,17 +42,19 @@ function DropdownNav({ etiqueta, enlaces }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full mt-2 min-w-48 rounded-lg bg-base-100 dark:bg-base-200 shadow-lg border border-base-300 dark:border-base-300/50 py-2 z-50"
+            className="absolute left-0 top-full mt-2 min-w-52 rounded-2xl p-px bg-gradient-to-br from-municipal-naranja/50 via-transparent to-municipal-verde/50 z-50"
           >
-            {enlaces.map((enlace) => (
-              <Link
-                key={enlace.nombre}
-                to={enlace.ruta}
-                className="block px-4 py-2 text-sm text-base-content hover:bg-base-200 dark:hover:bg-base-300 hover:text-municipal-naranja transition-colors"
-              >
-                {enlace.nombre}
-              </Link>
-            ))}
+            <div className="rounded-[calc(1rem-1px)] bg-white/75 dark:bg-[#0d0d0d]/90 backdrop-blur-xl py-2">
+              {enlaces.map((enlace) => (
+                <Link
+                  key={enlace.nombre}
+                  to={enlace.ruta}
+                  className="block px-4 py-2 text-sm text-municipal-azul dark:text-municipal-crema hover:text-municipal-naranja hover:bg-municipal-azul/5 dark:hover:bg-white/5 transition-colors"
+                >
+                  {enlace.nombre}
+                </Link>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -62,7 +67,7 @@ function Navbar() {
   const [menuAbierto, setMenuAbierto] = useState(false)
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-municipal-azul shadow-md">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-municipal-azul/85 shadow-md backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-14">
           <Link to="/" className="flex items-center gap-3">
@@ -85,10 +90,10 @@ function Navbar() {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `py-2 text-sm transition-colors ${
+                `relative py-2 text-sm transition-colors ${claseSubrayado} ${
                   isActive
-                    ? 'text-municipal-naranja font-semibold'
-                    : 'text-municipal-crema hover:text-municipal-naranja'
+                    ? 'text-municipal-naranja font-semibold after:opacity-100'
+                    : 'text-municipal-crema hover:text-municipal-naranja after:opacity-0'
                 }`
               }
             >
@@ -98,23 +103,25 @@ function Navbar() {
             <DropdownNav etiqueta="Proyectos" enlaces={enlacesProyectos} />
             <a
               href="#"
-              className="btn btn-primary btn-sm rounded-full px-4 text-xs"
+              className="inline-flex items-center rounded-full p-px bg-gradient-to-r from-municipal-verde via-municipal-naranja to-municipal-azul shadow-lg transition-transform hover:scale-105"
             >
-              Capacitaciones
+              <span className="rounded-full bg-municipal-azul px-4 py-1.5 text-xs font-semibold text-municipal-crema">
+                Capacitaciones
+              </span>
             </a>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={alternarTema}
-              className="p-2 rounded-lg text-municipal-crema hover:bg-white/10 transition-colors"
+              className="p-2 rounded-full text-municipal-crema hover:bg-white/10 border border-white/10 transition-colors"
               aria-label={tema === 'oscuro' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
             >
               {tema === 'oscuro' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button
               onClick={() => setMenuAbierto((estado) => !estado)}
-              className="lg:hidden p-2 rounded-lg text-municipal-crema hover:bg-white/10 transition-colors"
+              className="lg:hidden p-2 rounded-full text-municipal-crema hover:bg-white/10 border border-white/10 transition-colors"
               aria-label="Abrir menú"
             >
               {menuAbierto ? <X size={22} /> : <Menu size={22} />}
@@ -123,6 +130,11 @@ function Navbar() {
         </div>
       </div>
 
+      <div
+        className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-municipal-verde via-municipal-naranja to-municipal-azul"
+        aria-hidden="true"
+      />
+
       <AnimatePresence>
         {menuAbierto && (
           <motion.div
@@ -130,7 +142,7 @@ function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="lg:hidden overflow-hidden border-t border-white/10"
+            className="lg:hidden overflow-hidden bg-municipal-azul/90 backdrop-blur-xl"
           >
             <div className="px-4 py-3 space-y-1">
               <NavLink
@@ -161,6 +173,10 @@ function Navbar() {
                 Capacitaciones →
               </a>
             </div>
+            <div
+              className="h-px bg-gradient-to-r from-municipal-verde via-municipal-naranja to-municipal-azul"
+              aria-hidden="true"
+            />
           </motion.div>
         )}
       </AnimatePresence>
