@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   Target,
@@ -168,14 +167,6 @@ function CajaOrganigrama({ cargo, nombre }) {
 }
 
 function QuienesSomos() {
-  useEffect(() => {
-    const { hash } = window.location
-    if (hash) {
-      const destino = document.querySelector(hash)
-      if (destino) destino.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }, [])
-
   return (
     <div className="relative overflow-hidden">
       <div
