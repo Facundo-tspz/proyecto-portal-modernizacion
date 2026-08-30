@@ -91,7 +91,7 @@ function Breadcrumb({ ruta }) {
   )
 }
 
-function MenuLateral({ rol, ruta, onNavegar }) {
+function MenuLateral({ rol, ruta, onNavegar, nombre }) {
   const gruposVisibles = grupos.filter((g) => g.roles.includes(rol))
   const [abierto, setAbierto] = useState(() => {
     const inicial = {}
@@ -185,7 +185,7 @@ function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-[#101a2e] text-slate-100">
       <aside className="hidden w-64 shrink-0 border-r border-white/10 lg:block">
-        <MenuLateral rol={rol} ruta={ruta} onNavegar={() => {}} />
+        <MenuLateral rol={rol} ruta={ruta} onNavegar={() => {}} nombre={nombre} />
       </aside>
 
       <div className="flex flex-1 flex-col">

@@ -1,12 +1,17 @@
 -- ============================================================
--- 0005_storage.sql
--- Crea la tabla "destacados_proyectos" para la pestaña Proyectos
--- del carrusel de destacados (home) y prepara el Storage para las
--- imágenes del portal (bucket "modernizacion").
+-- 0003_almacenamiento.sql
+-- Tabla destacados_proyectos (carrusel de Proyectos en el home)
+-- y Storage: bucket "modernizacion" público con políticas de
+-- escritura admin/editor.
+-- Depende de: 0001 (es_admin_o_editor).
 -- ============================================================
 
--- ---------- Tabla: destacados_proyectos (carrusel home) ----------
-create table if not exists public.destacados_proyectos (
+-- ---------- Drops preventivos ----------
+-- CASCADE elimina también el trigger de la tabla.
+drop table if exists public.destacados_proyectos cascade;
+
+-- ---------- Tabla: destacados_proyectos ----------
+create table public.destacados_proyectos (
   id uuid primary key default gen_random_uuid(),
   titulo text not null,
   leyenda text default '',
@@ -35,42 +40,20 @@ values ('modernizacion', 'modernizacion', true)
 on conflict (id) do nothing;
 
 drop policy if exists "modernizacion_public_read" on storage.objects;
-create policy "modernizacion_public_read"
-on storage.objects for select
+create policy "modernizacion_public_read" on storage.objects for select
 using (bucket_id = 'modernizacion');
 
 drop policy if exists "modernizacion_admin_write" on storage.objects;
-create policy "modernizacion_admin_write"
-on storage.objects for insert
-with check (
-  bucket_id = 'modernizacion'
-  and exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol in ('admin', 'editor') and p.activo
-  )
-);
+create policy "modernizacion_admin_write" on storage.objects for insert
+with check (bucket_id = 'modernizacion' and public.es_admin_o_editor());
 
 drop policy if exists "modernizacion_admin_update" on storage.objects;
-create policy "modernizacion_admin_update"
-on storage.objects for update
-using (
-  bucket_id = 'modernizacion'
-  and exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol in ('admin', 'editor') and p.activo
-  )
-);
+create policy "modernizacion_admin_update" on storage.objects for update
+using (bucket_id = 'modernizacion' and public.es_admin_o_editor());
 
 drop policy if exists "modernizacion_admin_delete" on storage.objects;
-create policy "modernizacion_admin_delete"
-on storage.objects for delete
-using (
-  bucket_id = 'modernizacion'
-  and exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol in ('admin', 'editor') and p.activo
-  )
-);
+create policy "modernizacion_admin_delete" on storage.objects for delete
+using (bucket_id = 'modernizacion' and public.es_admin_o_editor());
 
 -- ---------- Seed: destacados_proyectos ----------
 insert into public.destacados_proyectos (titulo, leyenda, imagen_url, link, orden) values

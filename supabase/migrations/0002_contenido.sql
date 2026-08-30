@@ -1,13 +1,30 @@
 -- ============================================================
 -- 0002_contenido.sql
--- Contenido editable del portal público: avisos, capacitaciones,
--- noticias, tarjetas_enlace y config_sitio. Con seed del contenido
--- actual del home, para no perder nada al migrar del estado mock.
--- Ejecutar en Dashboard Supabase > SQL Editor > New Query > Run
+-- Contenido editable del portal: config_sitio (textos), avisos
+-- (banner), capacitaciones, noticias y tarjetas_enlace.
+-- Con seeds del contenido actual del home.
+-- Depende de: 0001 (define es_admin_o_editor).
 -- ============================================================
 
+-- ---------- Drops preventivos (para re-ejecutar sin errores) ----------
+-- Se borran las tablas con CASCADE (elimina también sus triggers),
+-- por lo que NO hace falta drop de triggers individuales.
+drop table if exists public.config_sitio cascade;
+drop table if exists public.avisos cascade;
+drop table if exists public.capacitaciones cascade;
+drop table if exists public.noticias cascade;
+drop table if exists public.tarjetas_enlace cascade;
+
+-- ---------- Tabla: config_sitio (textos del portal) ----------
+create table public.config_sitio (
+  clave text primary key,
+  valor text default '',
+  tipo text not null default 'texto',
+  updated_at timestamptz not null default now()
+);
+
 -- ---------- Tabla: avisos (banner de noticias) ----------
-create table if not exists public.avisos (
+create table public.avisos (
   id uuid primary key default gen_random_uuid(),
   activo boolean not null default true,
   texto text not null default '',
@@ -18,7 +35,7 @@ create table if not exists public.avisos (
 );
 
 -- ---------- Tabla: capacitaciones ----------
-create table if not exists public.capacitaciones (
+create table public.capacitaciones (
   id uuid primary key default gen_random_uuid(),
   titulo text not null,
   leyenda text default '',
@@ -31,7 +48,7 @@ create table if not exists public.capacitaciones (
 );
 
 -- ---------- Tabla: noticias ----------
-create table if not exists public.noticias (
+create table public.noticias (
   id uuid primary key default gen_random_uuid(),
   titulo text not null,
   leyenda text default '',
@@ -44,7 +61,7 @@ create table if not exists public.noticias (
 );
 
 -- ---------- Tabla: tarjetas_enlace (accesos útiles) ----------
-create table if not exists public.tarjetas_enlace (
+create table public.tarjetas_enlace (
   id uuid primary key default gen_random_uuid(),
   icono text default '',
   titulo text not null,
@@ -53,14 +70,6 @@ create table if not exists public.tarjetas_enlace (
   activo boolean not null default true,
   orden integer not null default 0,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
--- ---------- Tabla: config_sitio (textos del portal) ----------
-create table if not exists public.config_sitio (
-  clave text primary key,
-  valor text default '',
-  tipo text not null default 'texto',
   updated_at timestamptz not null default now()
 );
 
@@ -81,44 +90,54 @@ create trigger trg_noticias_updated before update on public.noticias for each ro
 create trigger trg_tarjetas_updated before update on public.tarjetas_enlace for each row execute function public.set_updated_at_contenido();
 create trigger trg_config_updated before update on public.config_sitio for each row execute function public.set_updated_at_contenido();
 
--- ---------- RLS: contenido (lectura pública, escritura admin/editor) ----------
+-- ---------- RLS: contenido ----------
 alter table public.avisos enable row level security;
 alter table public.capacitaciones enable row level security;
 alter table public.noticias enable row level security;
 alter table public.tarjetas_enlace enable row level security;
 alter table public.config_sitio enable row level security;
 
+-- Lectura pública
+drop policy if exists "avisos_select_publico" on public.avisos;
 create policy "avisos_select_publico" on public.avisos for select using (true);
+
+drop policy if exists "capacitaciones_select_publico" on public.capacitaciones;
 create policy "capacitaciones_select_publico" on public.capacitaciones for select using (true);
+
+drop policy if exists "noticias_select_publico" on public.noticias;
 create policy "noticias_select_publico" on public.noticias for select using (true);
+
+drop policy if exists "tarjetas_select_publico" on public.tarjetas_enlace;
 create policy "tarjetas_select_publico" on public.tarjetas_enlace for select using (true);
+
+drop policy if exists "config_select_publico" on public.config_sitio;
 create policy "config_select_publico" on public.config_sitio for select using (true);
 
--- Escritura admin/editor (reutiliza helper)
-create or replace function public.es_admin_o_editor()
-returns boolean
-language sql
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol in ('admin', 'editor') and p.activo
-  )
-$$;
-
+-- Escritura admin/editor (helper security definer de 0001)
+drop policy if exists "avisos_write" on public.avisos;
 create policy "avisos_write" on public.avisos for all using (public.es_admin_o_editor()) with check (public.es_admin_o_editor());
+
+drop policy if exists "capacitaciones_write" on public.capacitaciones;
 create policy "capacitaciones_write" on public.capacitaciones for all using (public.es_admin_o_editor()) with check (public.es_admin_o_editor());
+
+drop policy if exists "noticias_write" on public.noticias;
 create policy "noticias_write" on public.noticias for all using (public.es_admin_o_editor()) with check (public.es_admin_o_editor());
+
+drop policy if exists "tarjetas_write" on public.tarjetas_enlace;
 create policy "tarjetas_write" on public.tarjetas_enlace for all using (public.es_admin_o_editor()) with check (public.es_admin_o_editor());
+
+drop policy if exists "config_write" on public.config_sitio;
 create policy "config_write" on public.config_sitio for all using (public.es_admin_o_editor()) with check (public.es_admin_o_editor());
 
--- ---------- Seed: avisos (banner) ----------
+-- ============================================================
+-- Seeds
+-- ============================================================
+
+-- Aviso (UNA sola fila, el código usa .single())
 insert into public.avisos (activo, texto, link, imagen_url) values
   (true, 'Nueva capacitación de herramientas digitales. Inscripciones abiertas en la Dirección de Modernización.', '', '/images/banner-noticia/banner-seismiles.webp')
 on conflict do nothing;
 
--- ---------- Seed: capacitaciones ----------
 insert into public.capacitaciones (titulo, leyenda, imagen_url, link, orden) values
   ('Taller de Excel Avanzado', 'Plantillas, tablas dinámicas y automatización de reportes para la gestión municipal.', '/images/banner-noticia/banner-seismiles.webp', '', 1),
   ('Firma Digital Certificada', 'Trámites 100% digitales con firma electrónica para el personal de la municipalidad.', '/images/banner-noticia/banner-seismiles.webp', '', 2),
@@ -127,20 +146,17 @@ insert into public.capacitaciones (titulo, leyenda, imagen_url, link, orden) val
   ('Ciberseguridad Básica', 'Contraseñas seguras, correos fraudulentos y buenas prácticas en equipos del estado.', '/images/banner-noticia/banner-seismiles.webp', '', 5)
 on conflict do nothing;
 
--- ---------- Seed: noticias ----------
 insert into public.noticias (titulo, leyenda, imagen_url, link, orden) values
   ('IA generativa, ¿qué es y cómo usarla en trámites?', 'Un repaso simple de las herramientas de IA y sus usos en oficinas públicas.', '/images/banner-noticia/banner-seismiles.webp', '', 1),
   ('Lanzamiento de la nueva web departamental', 'Ya podés consultar la información de las secretarías desde un solo lugar.', '/images/banner-noticia/banner-seismiles.webp', '', 2)
 on conflict do nothing;
 
--- ---------- Seed: tarjetas_enlace (accesos útiles) ----------
 insert into public.tarjetas_enlace (icono, titulo, leyenda, link, activo, orden) values
   ('file-text', 'Certificado Digital', 'Gestioná tu certificado digital y firma electrónica desde acá.', '', true, 1),
   ('calendar-days', 'Calendario de Feriados', 'Feriados, conmemoraciones y días no laborables de la provincia.', '', true, 2),
   ('newspaper', 'Boletín Municipal', 'Las ordenanzas y resoluciones oficiales de la municipalidad.', '', true, 3)
 on conflict do nothing;
 
--- ---------- Seed: config_sitio (textos del portal) ----------
 insert into public.config_sitio (clave, valor, tipo) values
   -- Banner
   ('banner_activo', 'true', 'booleano'),

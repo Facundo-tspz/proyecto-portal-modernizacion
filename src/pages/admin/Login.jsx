@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Lock, Mail, LogIn, Sparkles } from 'lucide-react'
+import { Lock, Mail, LogIn, Sparkles, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Toaster, toast } from 'sonner'
 
@@ -10,6 +10,7 @@ function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [verPassword, setVerPassword] = useState(false)
   const [enviando, setEnviando] = useState(false)
 
   async function manejarEnvio(evento) {
@@ -18,7 +19,7 @@ function Login() {
     const { error } = await iniciarSesion(email, password)
 
     if (error) {
-      toast.error('Credenciales incorrectas. Verificá tus datos.')
+      toast.error(error.message || 'No se pudo iniciar sesión.')
       setEnviando(false)
       return
     }
@@ -79,7 +80,7 @@ function Login() {
                 <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 transition-colors focus-within:border-cyan-400">
                   <Lock size={18} className="shrink-0 text-slate-400" />
                   <input
-                    type="password"
+                    type={verPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -87,6 +88,15 @@ function Login() {
                     placeholder="••••••••"
                     className="w-full bg-transparent py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setVerPassword((v) => !v)}
+                    className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:text-slate-200"
+                    aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    title={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    {verPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </label>
 

@@ -1,9 +1,11 @@
 -- ============================================================
 -- 0004_usuarios.sql
 -- Gestión de usuarios desde el panel (rol admin).
--- Permite al admin crear usuarios, cambiar rol y activar/desactivar
--- usando Supabase Auth + perfiles, sin exponer la service_role key.
---
+-- CRÍTICO: crea usuarios con INSERT COMPLETO en auth.users,
+-- seteando todas las columnas a string vacío / valor correcto,
+-- para NO repetir el problema de "Database error querying schema"
+-- (que ocurría cuando columnas quedaban en NULL).
+-- Depende de: 0001 (rol_usuario, es_admin).
 -- ============================================================
 
 -- Función: crear usuario (email + password + rol) SOLO para admin
@@ -16,21 +18,58 @@ create or replace function public.crear_usuario_admin(
 returns uuid
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, auth
 as $$
 declare
   user_id uuid;
 begin
   -- Solo un admin autenticado puede crear usuarios
-  if not exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol = 'admin' and p.activo
-  ) then
+  if not public.es_admin() then
     raise exception 'No autorizado';
   end if;
 
-  user_id := public.crear_admin(p_email, p_password);
-  update public.perfiles set nombre = p_nombre, rol = p_rol where id = user_id;
+  user_id := gen_random_uuid();
+
+  -- INSERT COMPLETO: todas las columnas inicializadas (sin NULL) para
+  -- que el servidor de Auth no falle al leer la fila.
+  insert into auth.users (
+    instance_id, id, aud, role,
+    email, encrypted_password,
+    email_confirmed_at, confirmation_token, confirmation_sent_at,
+    recovery_token, recovery_sent_at,
+    email_change_token_new, email_change, email_change_sent_at,
+    last_sign_in_at, raw_app_meta_data, raw_user_meta_data,
+    created_at, updated_at,
+    phone, phone_confirmed_at, phone_change, phone_change_token,
+    phone_change_sent_at
+  ) values (
+    '00000000-0000-0000-0000-000000000000', user_id,
+    'authenticated', 'authenticated',
+    p_email, crypt(p_password, gen_salt('bf', 10)),
+    now(), '', now(),
+    '', now(),
+    '', '', now(),
+    now(),
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    jsonb_build_object('nombre', p_nombre),
+    now(), now(),
+    '', null, '', '',
+    null
+  );
+
+  insert into auth.identities (
+    id, user_id, provider_id, provider, identity_data,
+    last_sign_in_at, created_at, updated_at
+  ) values (
+    gen_random_uuid(), user_id, user_id::text, 'email',
+    jsonb_build_object('sub', user_id::text, 'email', p_email,
+                       'email_verified', true, 'phone_verified', false),
+    now(), now(), now()
+  );
+
+  insert into public.perfiles (id, nombre, rol, activo)
+  values (user_id, p_nombre, p_rol, true);
+
   return user_id;
 end;
 $$;
@@ -46,10 +85,7 @@ security definer
 set search_path = public
 as $$
 begin
-  if not exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol = 'admin' and p.activo
-  ) then
+  if not public.es_admin() then
     raise exception 'No autorizado';
   end if;
 
@@ -68,10 +104,7 @@ security definer
 set search_path = public
 as $$
 begin
-  if not exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol = 'admin' and p.activo
-  ) then
+  if not public.es_admin() then
     raise exception 'No autorizado';
   end if;
 
@@ -81,18 +114,6 @@ $$;
 
 revoke all on function public.toggle_usuario_activo(uuid, boolean) from public;
 grant execute on function public.toggle_usuario_activo(uuid, boolean) to authenticated;
-
--- Ajuste RLS: permitir a los admins listar todos los perfiles
-drop policy if exists "perfiles_select_own" on public.perfiles;
-create policy "perfiles_select_own"
-  on public.perfiles for select
-  using (
-    auth.uid() = id
-    or exists (
-      select 1 from public.perfiles p
-      where p.id = auth.uid() and p.rol = 'admin' and p.activo
-    )
-  );
 
 -- Función: listar usuarios (email + perfil) para el admin
 create or replace function public.listar_usuarios()
@@ -105,13 +126,10 @@ returns table (
 )
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, auth
 as $$
 begin
-  if not exists (
-    select 1 from public.perfiles p
-    where p.id = auth.uid() and p.rol = 'admin' and p.activo
-  ) then
+  if not public.es_admin() then
     raise exception 'No autorizado';
   end if;
 
