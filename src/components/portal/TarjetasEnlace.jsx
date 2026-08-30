@@ -1,13 +1,15 @@
+import { useEffect, useState } from 'react'
 import { FileText, CalendarDays, Newspaper, Globe, Link2, Share2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { supabase } from '../../lib/supabase'
 
-const tarjetasBase = [
+const tarjetasFallback = [
   {
     id: 1,
     icono: 'file-text',
     titulo: 'Certificado Digital',
     leyenda: 'Gestioná tu certificado digital y firma electrónica desde acá.',
-    link: 'https://certificados.example.com',
+    link: '',
     activo: true,
   },
   {
@@ -15,7 +17,7 @@ const tarjetasBase = [
     icono: 'calendar-days',
     titulo: 'Calendario de Feriados',
     leyenda: 'Feriados, conmemoraciones y días no laborables de la provincia.',
-    link: 'https://calendario.example.com',
+    link: '',
     activo: true,
   },
   {
@@ -23,7 +25,7 @@ const tarjetasBase = [
     icono: 'newspaper',
     titulo: 'Boletín Municipal',
     leyenda: 'Las ordenanzas y resoluciones oficiales de la municipalidad.',
-    link: 'https://boletin.example.com',
+    link: '',
     activo: true,
   },
 ]
@@ -38,11 +40,29 @@ const iconos = {
 }
 
 function TarjetasEnlace() {
-  const tarjetas = tarjetasBase.filter((t) => t.activo)
+  const [tarjetas, setTarjetas] = useState(tarjetasFallback)
 
-  if (tarjetas.length === 0) return null
+  useEffect(() => {
+    let activo = true
+    supabase
+      .from('tarjetas_enlace')
+      .select('id, icono, titulo, leyenda, link, activo, orden')
+      .order('orden', { ascending: true })
+      .then(({ data, error }) => {
+        if (data && !error && activo && data.length > 0) {
+          setTarjetas(data)
+        }
+      })
+    return () => {
+      activo = false
+    }
+  }, [])
 
-  const cantidad = tarjetas.length
+  const tarjetasVisibles = tarjetas.filter((t) => t.activo)
+
+  if (tarjetasVisibles.length === 0) return null
+
+  const cantidad = tarjetasVisibles.length
   const claseAncho =
     cantidad === 1
       ? 'lg:max-w-2xl'
@@ -62,7 +82,7 @@ function TarjetasEnlace() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
-        {tarjetas.map((tarjeta, i) => {
+        {tarjetasVisibles.map((tarjeta, i) => {
           const Icono = iconos[tarjeta.icono] ?? Link2
           return (
             <motion.a

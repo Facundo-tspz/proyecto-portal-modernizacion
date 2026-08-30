@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Megaphone } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { supabase } from '../../lib/supabase'
 
-const config = {
+const configFallback = {
   activo: true,
   texto: 'Nueva capacitación de herramientas digitales. Inscripciones abiertas en la Dirección de Modernización.',
   link: '',
@@ -9,6 +11,30 @@ const config = {
 }
 
 function BannerNoticias() {
+  const [config, setConfig] = useState(configFallback)
+
+  useEffect(() => {
+    let activo = true
+    supabase
+      .from('avisos')
+      .select('activo, texto, link, imagen_url')
+      .limit(1)
+      .single()
+      .then(({ data, error }) => {
+        if (data && !error && activo) {
+          setConfig({
+            activo: data.activo,
+            texto: data.texto || '',
+            link: data.link || '',
+            imagen: data.imagen_url || '',
+          })
+        }
+      })
+    return () => {
+      activo = false
+    }
+  }, [])
+
   if (!config.activo) return null
 
   const contenido = (

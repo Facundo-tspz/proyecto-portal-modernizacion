@@ -13,8 +13,9 @@ import {
   Mail,
   ArrowRight,
 } from 'lucide-react'
+import { useConfigSitio } from '../../hooks/useConfigSitio'
 
-const config = {
+const configBase = {
   presentacion: {
     overline: 'Quiénes somos',
     titulo: 'Un área al servicio de la innovación municipal',
@@ -167,6 +168,69 @@ function CajaOrganigrama({ cargo, nombre }) {
 }
 
 function QuienesSomos() {
+  const configDb = useConfigSitio()
+  const config = configDb
+    ? {
+        ...configBase,
+        presentacion: {
+          overline: configDb.q_overline || configBase.presentacion.overline,
+          titulo: configDb.q_titulo || configBase.presentacion.titulo,
+          parrafos: [
+            configDb.q_parrafo_1 || configBase.presentacion.parrafos[0],
+            configDb.q_parrafo_2 || configBase.presentacion.parrafos[1],
+          ],
+        },
+        pilares: [
+          {
+            ...configBase.pilares[0],
+            descripcion: configDb.q_mision || configBase.pilares[0].descripcion,
+          },
+          {
+            ...configBase.pilares[1],
+            descripcion: configDb.q_vision || configBase.pilares[1].descripcion,
+          },
+          {
+            ...configBase.pilares[2],
+            descripcion: configDb.q_funcion || configBase.pilares[2].descripcion,
+          },
+        ],
+        servicios: [
+          {
+            ...configBase.servicios[0],
+            descripcion:
+              configDb.q_servicio_web_desc || configBase.servicios[0].descripcion,
+          },
+          {
+            ...configBase.servicios[1],
+            descripcion:
+              configDb.q_servicio_sistemas_desc ||
+              configBase.servicios[1].descripcion,
+          },
+          {
+            ...configBase.servicios[2],
+            descripcion:
+              configDb.q_servicio_soporte_desc ||
+              configBase.servicios[2].descripcion,
+          },
+          {
+            ...configBase.servicios[3],
+            descripcion:
+              configDb.q_servicio_caps_desc || configBase.servicios[3].descripcion,
+          },
+          {
+            ...configBase.servicios[4],
+            descripcion:
+              configDb.q_servicio_id_desc || configBase.servicios[4].descripcion,
+          },
+        ],
+        contacto: {
+          ubicacion: configDb.q_contacto_ubicacion || configBase.contacto.ubicacion,
+          telefono: configDb.q_contacto_telefono || configBase.contacto.telefono,
+          email: configDb.q_contacto_email || configBase.contacto.email,
+        },
+      }
+    : configBase
+
   return (
     <div className="relative overflow-hidden">
       <div

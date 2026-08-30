@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Wrench, Globe, GraduationCap, ArrowRight } from 'lucide-react'
+import { useConfigSitio } from '../../hooks/useConfigSitio'
 
-const config = {
+const configFallback = {
   overline: 'El área',
   titulo: 'Somos el Área de Modernización',
   parrafo:
@@ -39,6 +40,17 @@ const iconos = {
 }
 
 function SomosModernizacion() {
+  const configDb = useConfigSitio()
+  const config = configDb
+    ? {
+        ...configFallback,
+        overline: configDb.somos_overline || configFallback.overline,
+        titulo: configDb.somos_titulo || configFallback.titulo,
+        parrafo: configDb.somos_parrafo || configFallback.parrafo,
+        frase: configDb.somos_frase || configFallback.frase,
+      }
+    : configFallback
+
   return (
     <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       <div

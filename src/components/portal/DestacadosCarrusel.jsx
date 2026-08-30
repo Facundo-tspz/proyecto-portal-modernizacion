@@ -10,11 +10,13 @@ import {
   Newspaper,
   Sparkles,
 } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
 
 const categoriasBase = [
   {
     id: 'capacitaciones',
     nombre: 'Capacitaciones',
+    tabla: 'capacitaciones',
     items: [
       {
         id: 1,
@@ -30,7 +32,7 @@ const categoriasBase = [
         leyenda:
           'Trámites 100% digitales con firma electrónica para el personal de la municipalidad.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://capacitaciones.example.com',
+        link: '',
       },
       {
         id: 3,
@@ -38,7 +40,7 @@ const categoriasBase = [
         leyenda:
           'Cómo aprovechar la IA en tareas administrativas cotidianas del área.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://capacitaciones.example.com',
+        link: '',
       },
       {
         id: 4,
@@ -46,7 +48,7 @@ const categoriasBase = [
         leyenda:
           'Comunicación oficial para oficinas públicas: contenido, alcance y buen uso.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://capacitaciones.example.com',
+        link: '',
       },
       {
         id: 5,
@@ -54,13 +56,14 @@ const categoriasBase = [
         leyenda:
           'Contraseñas seguras, correos fraudulentos y buenas prácticas en equipos del estado.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://capacitaciones.example.com',
+        link: '',
       },
     ],
   },
   {
     id: 'proyectos',
     nombre: 'Proyectos',
+    tabla: 'destacados_proyectos',
     items: [
       {
         id: 1,
@@ -68,7 +71,7 @@ const categoriasBase = [
         leyenda:
           'La plataforma institucional que estás viendo: información, capacitaciones y gestión de incidencias.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://proyectos.example.com',
+        link: '',
       },
       {
         id: 2,
@@ -76,7 +79,7 @@ const categoriasBase = [
         leyenda:
           'Conectividad gratuita en espacios públicos y oficinas de la municipalidad.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://proyectos.example.com',
+        link: '',
       },
       {
         id: 3,
@@ -84,13 +87,14 @@ const categoriasBase = [
         leyenda:
           'Digitalización de trámites municipales para reducir tiempos de espera.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://proyectos.example.com',
+        link: '',
       },
     ],
   },
   {
     id: 'noticias',
     nombre: 'Noticias',
+    tabla: 'noticias',
     items: [
       {
         id: 1,
@@ -98,7 +102,7 @@ const categoriasBase = [
         leyenda:
           'Un repaso simple de las herramientas de IA y sus usos en oficinas públicas.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://noticias.example.com',
+        link: '',
       },
       {
         id: 2,
@@ -106,7 +110,7 @@ const categoriasBase = [
         leyenda:
           'Ya podés consultar la información de las secretarías desde un solo lugar.',
         imagen_url: '/images/banner-noticia/banner-seismiles.webp',
-        link: 'https://noticias.example.com',
+        link: '',
       },
     ],
   },
@@ -253,14 +257,48 @@ function TarjetaSecundaria({ item, categoria, altaCalidad, onPromover }) {
 }
 
 function DestacadosCarrusel() {
+  const [categorias, setCategorias] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [categoriaActiva, setCategoriaActiva] = useState(0)
   const [indicePrincipal, setIndicePrincipal] = useState(0)
   const [manualmente, setManualmente] = useState(0)
 
+  useEffect(() => {
+    let activo = true
+    Promise.all(
+      categoriasBase.map((categoria) =>
+        supabase
+          .from(categoria.tabla)
+          .select('id, titulo, leyenda, imagen_url, link, activo, orden')
+          .eq('activo', true)
+          .order('orden', { ascending: true })
+          .then(({ data }) => ({
+            id: categoria.id,
+            nombre: categoria.nombre,
+            items: data || [],
+          }))
+      )
+    ).then((resultado) => {
+      if (!activo) return
+      const conItems = resultado.map((cat) => ({
+        ...cat,
+        items:
+          cat.items.length > 0
+            ? cat.items
+            : categoriasBase.find((c) => c.id === cat.id)?.items || [],
+      }))
+      setCategorias(conItems)
+      setCargando(false)
+    })
+    return () => {
+      activo = false
+    }
+  }, [])
+
   const categoriasVisibles = useMemo(
-    () => categoriasBase.filter((c) => c.items.length > 0),
-    []
+    () =>
+      (categorias || categoriasBase).filter((c) => c.items.length > 0),
+    [categorias]
   )
 
   useEffect(() => {

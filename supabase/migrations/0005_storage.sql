@@ -1,0 +1,80 @@
+-- ============================================================
+-- 0005_storage.sql
+-- Crea la tabla "destacados_proyectos" para la pestaña Proyectos
+-- del carrusel de destacados (home) y prepara el Storage para las
+-- imágenes del portal (bucket "modernizacion").
+-- ============================================================
+
+-- ---------- Tabla: destacados_proyectos (carrusel home) ----------
+create table if not exists public.destacados_proyectos (
+  id uuid primary key default gen_random_uuid(),
+  titulo text not null,
+  leyenda text default '',
+  imagen_url text default '',
+  link text default '',
+  orden integer not null default 0,
+  activo boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.destacados_proyectos enable row level security;
+
+drop policy if exists "destacados_proyectos_select_publico" on public.destacados_proyectos;
+create policy "destacados_proyectos_select_publico" on public.destacados_proyectos for select using (true);
+
+drop policy if exists "destacados_proyectos_write" on public.destacados_proyectos;
+create policy "destacados_proyectos_write" on public.destacados_proyectos for all using (public.es_admin_o_editor()) with check (public.es_admin_o_editor());
+
+create trigger trg_destacados_proyectos_updated before update on public.destacados_proyectos
+for each row execute function public.set_updated_at_contenido();
+
+-- ---------- Storage: bucket "modernizacion" (público) ----------
+insert into storage.buckets (id, name, public)
+values ('modernizacion', 'modernizacion', true)
+on conflict (id) do nothing;
+
+drop policy if exists "modernizacion_public_read" on storage.objects;
+create policy "modernizacion_public_read"
+on storage.objects for select
+using (bucket_id = 'modernizacion');
+
+drop policy if exists "modernizacion_admin_write" on storage.objects;
+create policy "modernizacion_admin_write"
+on storage.objects for insert
+with check (
+  bucket_id = 'modernizacion'
+  and exists (
+    select 1 from public.perfiles p
+    where p.id = auth.uid() and p.rol in ('admin', 'editor') and p.activo
+  )
+);
+
+drop policy if exists "modernizacion_admin_update" on storage.objects;
+create policy "modernizacion_admin_update"
+on storage.objects for update
+using (
+  bucket_id = 'modernizacion'
+  and exists (
+    select 1 from public.perfiles p
+    where p.id = auth.uid() and p.rol in ('admin', 'editor') and p.activo
+  )
+);
+
+drop policy if exists "modernizacion_admin_delete" on storage.objects;
+create policy "modernizacion_admin_delete"
+on storage.objects for delete
+using (
+  bucket_id = 'modernizacion'
+  and exists (
+    select 1 from public.perfiles p
+    where p.id = auth.uid() and p.rol in ('admin', 'editor') and p.activo
+  )
+);
+
+-- ---------- Seed: destacados_proyectos ----------
+insert into public.destacados_proyectos (titulo, leyenda, imagen_url, link, orden) values
+  ('Portal de Modernización', 'La plataforma institucional que estás viendo: información, capacitaciones y gestión de incidencias.', '/images/banner-noticia/banner-seismiles.webp', '', 1),
+  ('Red WiFi Municipal', 'Conectividad gratuita en espacios públicos y oficinas de la municipalidad.', '/images/banner-noticia/banner-seismiles.webp', '', 2),
+  ('Gestión de Trámites Digitales', 'Digitalización de trámites municipales para reducir tiempos de espera.', '/images/banner-noticia/banner-seismiles.webp', '', 3)
+on conflict do nothing;
