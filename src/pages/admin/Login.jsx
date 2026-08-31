@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Lock, Mail, LogIn, Sparkles, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 
 function Login() {
   const { iniciarSesion } = useAuth()
@@ -116,8 +116,6 @@ function Login() {
           Sistema interno · acceso restringido al equipo del área
         </p>
       </motion.div>
-
-      <Toaster position="top-center" richColors />
     </div>
   )
 }

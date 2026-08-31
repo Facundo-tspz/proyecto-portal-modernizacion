@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { toast, Toaster } from 'sonner'
+import { toast } from 'sonner'
 import { UserPlus, RefreshCw, ShieldCheck } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
@@ -291,8 +291,6 @@ function Usuarios() {
           setConfirmarAccion(null)
         }}
       />
-
-      <Toaster position="top-center" richColors />
     </div>
   )
 }
