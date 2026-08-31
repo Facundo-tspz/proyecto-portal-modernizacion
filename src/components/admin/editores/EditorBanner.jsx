@@ -22,6 +22,7 @@ function EditorBanner() {
       .then(({ data }) => {
         if (data && activo) {
           setForm({
+            id: data.id,
             activo: data.activo,
             texto: data.texto || '',
             link: data.link || '',
@@ -59,10 +60,18 @@ function EditorBanner() {
   async function guardar(e) {
     e.preventDefault()
     setGuardando(true)
-    const { error } = await supabase
-      .from('avisos')
-      .update({ activo: form.activo, texto: form.texto, link: form.link, imagen_url: form.imagen_url })
-      .eq('id', form.id)
+    const fila = {
+      activo: form.activo,
+      texto: form.texto,
+      link: form.link,
+      imagen_url: form.imagen_url,
+    }
+    const { error } = form.id
+      ? await supabase
+          .from('avisos')
+          .update(fila)
+          .eq('id', form.id)
+      : await supabase.from('avisos').insert(fila)
     setGuardando(false)
     if (error) {
       toast.error('No se pudo guardar el banner')
