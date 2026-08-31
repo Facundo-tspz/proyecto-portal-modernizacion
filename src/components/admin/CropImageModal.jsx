@@ -21,18 +21,23 @@ function centrarAutom(defaultAspect, ancho, alto) {
 
 async function obtenerRecorte(imagen, recorte) {
   if (!imagen || !recorte?.width || !recorte?.height) return null
+  const nw = imagen.naturalWidth
+  const nh = imagen.naturalHeight
   const canvas = document.createElement('canvas')
-  const factor = imagen.naturalWidth / imagen.width
-  canvas.width = Math.floor(recorte.width * factor)
-  canvas.height = Math.floor(recorte.height * factor)
+  canvas.width = Math.round((recorte.width / 100) * nw)
+  canvas.height = Math.round((recorte.height / 100) * nh)
   const contexto = canvas.getContext('2d')
   if (!contexto) return null
+  const xPx = (recorte.x || 0) / 100
+  const yPx = (recorte.y || 0) / 100
+  const wPx = recorte.width / 100
+  const hPx = recorte.height / 100
   contexto.drawImage(
     imagen,
-    recorte.x * factor,
-    recorte.y * factor,
-    recorte.width * factor,
-    recorte.height * factor,
+    xPx * nw,
+    yPx * nh,
+    wPx * nw,
+    hPx * nh,
     0,
     0,
     canvas.width,
