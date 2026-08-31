@@ -10,6 +10,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  Home,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
@@ -159,7 +160,15 @@ function MenuLateral({ rol, ruta, onNavegar, nombre }) {
       </div>
 
       <div className="border-t border-white/10 px-3 py-4">
-        <div className="px-2">
+        <Link
+          to="/"
+          onClick={onNavegar}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-white/5"
+        >
+          <Home size={18} className="text-slate-400" />
+          Volver al inicio
+        </Link>
+        <div className="px-2 pt-4">
           <p className="text-sm font-medium text-slate-100">{nombre}</p>
         </div>
       </div>
@@ -209,6 +218,14 @@ function AdminLayout() {
               Rol: {rol}
             </span>
             <span className="hidden text-xs text-slate-300 md:inline-block">{nombre}</span>
+            <Link
+              to="/"
+              className="rounded-lg p-2 text-slate-200 transition-colors hover:bg-white/5"
+              aria-label="Volver al inicio"
+              title="Volver al inicio"
+            >
+              <Home size={18} />
+            </Link>
             <Link
               to="/mg-tinogasta/manual"
               className="rounded-lg p-2 text-slate-200 transition-colors hover:bg-white/5"
