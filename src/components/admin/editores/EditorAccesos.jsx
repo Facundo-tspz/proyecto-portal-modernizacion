@@ -64,8 +64,8 @@ function EditorAccesos() {
       .from('tarjetas_enlace')
       .update({ icono: it.icono, titulo: it.titulo, leyenda: it.leyenda, link: it.link, activo: it.activo })
       .eq('id', it.id)
-    if (error) toast.error('No se pudo guardar')
-    else toast.success('Cambios guardados')
+    if (error) toast.error('No se pudo guardar el acceso. Intentalo de nuevo.')
+    else toast.success('Acceso guardado correctamente')
   }
 
   async function crear(e) {
@@ -85,10 +85,10 @@ function EditorAccesos() {
     })
     setGuardando(false)
     if (error) {
-      toast.error('No se pudo crear')
+      toast.error('No se pudo crear el acceso. Intentalo de nuevo.')
       return
     }
-    toast.success('Acceso creado')
+    toast.success('Acceso creado correctamente')
     setNueva({ icono: 'file-text', titulo: '', leyenda: '', link: '' })
     setNuevaAbierta(false)
     cargar()
@@ -96,9 +96,9 @@ function EditorAccesos() {
 
   async function eliminar(id) {
     const { error } = await supabase.from('tarjetas_enlace').delete().eq('id', id)
-    if (error) toast.error('No se pudo eliminar')
+    if (error) toast.error('No se pudo eliminar el acceso. Intentalo de nuevo.')
     else {
-      toast.success('Acceso eliminado')
+      toast.success('Acceso eliminado correctamente')
       cargar()
     }
   }

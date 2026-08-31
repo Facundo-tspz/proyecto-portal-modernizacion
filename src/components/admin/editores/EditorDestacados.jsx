@@ -218,8 +218,8 @@ function EditorDestacados() {
       .from(catActiva.tabla)
       .update({ titulo: it.titulo, leyenda: it.leyenda, link: it.link, imagen_url: it.imagen_url, activo: it.activo })
       .eq('id', it.id)
-    if (error) toast.error('No se pudo guardar')
-    else toast.success('Cambios guardados')
+    if (error) toast.error('No se pudo guardar la tarjeta. Intentalo de nuevo.')
+    else toast.success('Tarjeta guardada correctamente')
   }
 
   async function subirParaItem(id, archivo) {
@@ -239,10 +239,10 @@ function EditorDestacados() {
       .insert({ titulo: nueva.titulo, leyenda: nueva.leyenda, link: nueva.link, imagen_url: nueva.imagen_url, orden: items.length + 1, activo: true })
     setGuardando(false)
     if (error) {
-      toast.error('No se pudo crear la tarjeta')
+      toast.error('No se pudo crear la tarjeta. Intentalo de nuevo.')
       return
     }
-    toast.success('Tarjeta creada')
+    toast.success('Tarjeta creada correctamente')
     setNueva({ titulo: '', leyenda: '', link: '', imagen_url: '' })
     setNuevaAbierta(false)
     cargarCategoria(catActiva)
@@ -251,9 +251,9 @@ function EditorDestacados() {
   async function eliminar(id) {
     const { error } = await supabase.from(catActiva.tabla).delete().eq('id', id)
     if (error) {
-      toast.error('No se pudo eliminar')
+      toast.error('No se pudo eliminar la tarjeta. Intentalo de nuevo.')
     } else {
-      toast.success('Tarjeta eliminada')
+      toast.success('Tarjeta eliminada correctamente')
       cargarCategoria(catActiva)
     }
   }

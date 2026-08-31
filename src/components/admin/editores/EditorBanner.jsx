@@ -74,9 +74,9 @@ function EditorBanner() {
       : await supabase.from('avisos').insert(fila)
     setGuardando(false)
     if (error) {
-      toast.error('No se pudo guardar el banner')
+      toast.error('No se pudo guardar el banner. Intentalo de nuevo.')
     } else {
-      toast.success('Banner guardado')
+      toast.success('Modificación de banner exitosa')
     }
   }
 

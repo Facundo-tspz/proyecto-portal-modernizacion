@@ -67,8 +67,8 @@ function EditorTextos() {
     const filas = Object.entries(todos).map(([clave, valor]) => ({ clave, valor }))
     const { error } = await supabase.from('config_sitio').upsert(filas, { onConflict: 'clave' })
     setGuardando(false)
-    if (error) toast.error('No se pudieron guardar los textos')
-    else toast.success('Textos guardados')
+    if (error) toast.error('No se pudieron guardar los textos. Intentalo de nuevo.')
+    else toast.success('Textos guardados correctamente')
   }
 
   if (cargando) return <p className="text-sm text-slate-400">Cargando…</p>
