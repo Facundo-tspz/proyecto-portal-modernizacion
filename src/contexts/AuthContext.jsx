@@ -90,7 +90,7 @@ export function AuthProvider({ children }) {
   async function cargarPerfil(user) {
     const { data } = await supabase
       .from('perfiles')
-      .select('nombre, rol, activo, tema')
+      .select('nombre, rol, activo')
       .eq('id', user.id)
       .single()
 

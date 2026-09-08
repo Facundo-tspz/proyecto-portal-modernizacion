@@ -106,10 +106,10 @@ function EditorAccesos() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <p className="text-sm text-panel-texto-suave">{items.length} accesos</p>
+        <p className="text-sm text-slate-400">{items.length} accesos</p>
         <button
           onClick={() => setNuevaAbierta((v) => !v)}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
         >
           <Plus size={16} /> Agregar acceso
         </button>
@@ -119,16 +119,16 @@ function EditorAccesos() {
         {items.map((it, i) => (
           <div
             key={it.id}
-            className="rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/30 via-transparent to-panel-acento-2/30"
+            className="rounded-2xl p-px bg-gradient-to-br from-indigo-500/30 via-transparent to-cyan-400/30"
           >
-            <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-4">
+            <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-panel-texto-suave">#{it.orden}</span>
+                  <span className="text-xs text-slate-500">#{it.orden}</span>
                   <select
                     value={it.icono}
                     onChange={(e) => actualizar(it.id, 'icono', e.target.value)}
-                    className="rounded-lg border border-panel-borde bg-panel-superficie px-2 py-1 text-xs text-panel-texto"
+                    className="rounded-lg border border-white/10 bg-[#101a2e] px-2 py-1 text-xs text-slate-200"
                   >
                     {opcionesIcono.map((o) => (
                       <option key={o.id} value={o.id}>
@@ -141,7 +141,7 @@ function EditorAccesos() {
                   <button
                     onClick={() => mover(i, -1)}
                     disabled={i === 0}
-                    className="rounded-lg p-1.5 text-panel-texto hover:bg-panel-hover disabled:opacity-30"
+                    className="rounded-lg p-1.5 text-slate-300 hover:bg-white/5 disabled:opacity-30"
                     aria-label="Subir"
                   >
                     <ArrowUp size={16} />
@@ -149,14 +149,14 @@ function EditorAccesos() {
                   <button
                     onClick={() => mover(i, 1)}
                     disabled={i === items.length - 1}
-                    className="rounded-lg p-1.5 text-panel-texto hover:bg-panel-hover disabled:opacity-30"
+                    className="rounded-lg p-1.5 text-slate-300 hover:bg-white/5 disabled:opacity-30"
                     aria-label="Bajar"
                   >
                     <ArrowDown size={16} />
                   </button>
                   <button
                     onClick={() => guardarUno(it)}
-                    className="rounded-lg p-1.5 text-panel-acento-texto hover:bg-panel-hover"
+                    className="rounded-lg p-1.5 text-cyan-300 hover:bg-white/5"
                     aria-label="Guardar"
                     title="Guardar cambios"
                   >
@@ -164,7 +164,7 @@ function EditorAccesos() {
                   </button>
                   <button
                     onClick={() => eliminar(it.id)}
-                    className="rounded-lg p-1.5 text-rose-300 hover:bg-panel-hover"
+                    className="rounded-lg p-1.5 text-rose-300 hover:bg-white/5"
                     aria-label="Eliminar"
                   >
                     <Trash2 size={16} />
@@ -178,21 +178,21 @@ function EditorAccesos() {
                   value={it.titulo}
                   onChange={(e) => actualizar(it.id, 'titulo', e.target.value)}
                   placeholder="Título"
-                  className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
+                  className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
                 />
                 <input
                   type="url"
                   value={it.link}
                   onChange={(e) => actualizar(it.id, 'link', e.target.value)}
                   placeholder="Link"
-                  className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
+                  className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
                 />
-                <label className="flex items-center gap-2 text-sm text-panel-texto">
+                <label className="flex items-center gap-2 text-sm text-slate-300">
                   <input
                     type="checkbox"
                     checked={it.activo}
                     onChange={(e) => actualizar(it.id, 'activo', e.target.checked)}
-                    className="h-4 w-4 accent-panel-acento-borde"
+                    className="h-4 w-4 accent-cyan-400"
                   />
                   Activo
                 </label>
@@ -201,7 +201,7 @@ function EditorAccesos() {
                   onChange={(e) => actualizar(it.id, 'leyenda', e.target.value)}
                   placeholder="Leyenda"
                   rows={2}
-                  className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none sm:col-span-3"
+                  className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none sm:col-span-3"
                 />
               </div>
             </div>
@@ -214,13 +214,13 @@ function EditorAccesos() {
           onSubmit={crear}
           className="mt-4 rounded-2xl p-px bg-gradient-to-br from-emerald-500/30 via-transparent to-cyan-400/30"
         >
-          <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-4">
-            <h4 className="text-sm font-semibold text-panel-texto">Nuevo acceso</h4>
+          <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-4">
+            <h4 className="text-sm font-semibold text-slate-100">Nuevo acceso</h4>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <select
                 value={nueva.icono}
                 onChange={(e) => setNueva({ ...nueva, icono: e.target.value })}
-                className="rounded-xl border border-panel-borde bg-panel-superficie px-3 py-2 text-sm text-panel-texto"
+                className="rounded-xl border border-white/10 bg-[#101a2e] px-3 py-2 text-sm text-slate-100"
               >
                 {opcionesIcono.map((o) => (
                   <option key={o.id} value={o.id}>
@@ -233,21 +233,21 @@ function EditorAccesos() {
                 value={nueva.titulo}
                 onChange={(e) => setNueva({ ...nueva, titulo: e.target.value })}
                 placeholder="Título"
-                className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto"
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100"
               />
               <input
                 type="url"
                 value={nueva.link}
                 onChange={(e) => setNueva({ ...nueva, link: e.target.value })}
                 placeholder="Link"
-                className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto"
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100"
               />
               <textarea
                 value={nueva.leyenda}
                 onChange={(e) => setNueva({ ...nueva, leyenda: e.target.value })}
                 placeholder="Leyenda"
                 rows={2}
-                className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto sm:col-span-3"
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 sm:col-span-3"
               />
             </div>
             <button

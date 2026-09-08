@@ -58,8 +58,8 @@ function Dashboard() {
 
   return (
     <div className="p-4 sm:p-8">
-      <h1 className="text-2xl font-bold text-panel-texto">Panel</h1>
-      <p className="mt-1 text-sm text-panel-texto-suave">
+      <h1 className="text-2xl font-bold text-slate-100">Panel</h1>
+      <p className="mt-1 text-sm text-slate-400">
         Hola, {usuario?.perfil?.nombre || 'Administrador'} · Resumen del área
       </p>
 
@@ -71,36 +71,36 @@ function Dashboard() {
               return (
                 <div
                   key={tarjeta.etiqueta}
-                  className="rounded-2xl p-px bg-gradient-to-br from-panel-borde to-panel-hover"
+                  className="rounded-2xl p-px bg-gradient-to-br from-white/10 to-white/5"
                 >
-                  <div className="flex h-full flex-col rounded-[calc(1rem-1px)] bg-panel-superficie p-4">
+                  <div className="flex h-full flex-col rounded-[calc(1rem-1px)] bg-[#101a2e] p-4">
                     <div
                       className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${tarjeta.color} text-white shadow`}
                     >
                       <Icono size={22} />
                     </div>
-                    <span className="mt-4 text-3xl font-bold text-panel-texto">
+                    <span className="mt-4 text-3xl font-bold text-slate-100">
                       {tarjeta.valor}
                     </span>
-                    <span className="mt-1 text-sm text-panel-texto-suave">{tarjeta.etiqueta}</span>
+                    <span className="mt-1 text-sm text-slate-400">{tarjeta.etiqueta}</span>
                   </div>
                 </div>
               )
             })}
           </div>
 
-          <div className="mt-6 rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/40 via-transparent to-panel-acento-2/40">
-            <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-5">
+          <div className="mt-6 rounded-2xl p-px bg-gradient-to-br from-indigo-500/40 via-transparent to-cyan-400/40">
+            <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-5">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-panel-texto">Mesa de ayuda</h2>
+                <h2 className="text-sm font-semibold text-slate-100">Mesa de ayuda</h2>
                 <Link
                   to="/mg-tinogasta/tickets"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-panel-acento-texto hover:text-panel-acento-texto"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-cyan-300 hover:text-cyan-200"
                 >
                   Ver tickets <ArrowRight size={14} />
                 </Link>
               </div>
-              <p className="mt-2 text-sm text-panel-texto-suave">
+              <p className="mt-2 text-sm text-slate-400">
                 Accedé a la lista completa de tickets para priorizar, cambiar estado y coordinar
                 respuestas.
               </p>
@@ -108,16 +108,16 @@ function Dashboard() {
           </div>
         </>
       ) : (
-        <div className="mt-6 rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/40 via-transparent to-panel-acento-2/40">
-          <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-6">
-            <h2 className="text-sm font-semibold text-panel-texto">Editor de contenido</h2>
-            <p className="mt-2 text-sm text-panel-texto-suave">
+        <div className="mt-6 rounded-2xl p-px bg-gradient-to-br from-indigo-500/40 via-transparent to-cyan-400/40">
+          <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-6">
+            <h2 className="text-sm font-semibold text-slate-100">Editor de contenido</h2>
+            <p className="mt-2 text-sm text-slate-400">
               Tu rol de editor te permite configurar el contenido del portal. Usá el menú
               "Contenido" para editar banner, destacados, accesos y textos.
             </p>
             <Link
               to="/mg-tinogasta/contenido"
-              className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-panel-acento-texto hover:text-panel-acento-texto"
+              className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-cyan-300 hover:text-cyan-200"
             >
               Ir a Contenido <ArrowRight size={14} />
             </Link>

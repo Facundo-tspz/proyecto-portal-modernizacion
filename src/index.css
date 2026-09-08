@@ -5,34 +5,10 @@
 @layer base {
   :root {
     color-scheme: light;
-
-    --panel-fondo: 244 243 233;
-    --panel-superficie: 255 255 255;
-    --panel-superficie-alt: 236 234 215;
-    --panel-texto: 31 41 55;
-    --panel-texto-suave: 107 114 128;
-    --panel-borde: rgba(15, 23, 42, 0.12);
-    --panel-hover: rgba(15, 23, 42, 0.06);
-    --panel-acento-1: 217 103 4;
-    --panel-acento-2: 62 89 2;
-    --panel-acento-texto: 217 103 4;
-    --panel-acento-borde: 62 89 2;
   }
 
   .dark {
     color-scheme: dark;
-
-    --panel-fondo: 11 18 32;
-    --panel-superficie: 16 26 46;
-    --panel-superficie-alt: 16 26 46;
-    --panel-texto: 241 245 249;
-    --panel-texto-suave: 148 163 184;
-    --panel-borde: rgba(255, 255, 255, 0.1);
-    --panel-hover: rgba(255, 255, 255, 0.05);
-    --panel-acento-1: 99 102 241;
-    --panel-acento-2: 34 211 238;
-    --panel-acento-texto: 103 232 249;
-    --panel-acento-borde: 34 211 238;
   }
 
   html {

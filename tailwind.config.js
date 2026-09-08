@@ -7,19 +7,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        panel: {
-          fondo: "rgb(var(--panel-fondo) / <alpha-value>)",
-          superficie: "rgb(var(--panel-superficie) / <alpha-value>)",
-          "superficie-alt": "rgb(var(--panel-superficie-alt) / <alpha-value>)",
-          texto: "rgb(var(--panel-texto) / <alpha-value>)",
-          "texto-suave": "rgb(var(--panel-texto-suave) / <alpha-value>)",
-          borde: "var(--panel-borde)",
-          hover: "var(--panel-hover)",
-          "acento-1": "rgb(var(--panel-acento-1) / <alpha-value>)",
-          "acento-2": "rgb(var(--panel-acento-2) / <alpha-value>)",
-          "acento-texto": "rgb(var(--panel-acento-texto) / <alpha-value>)",
-          "acento-borde": "rgb(var(--panel-acento-borde) / <alpha-value>)",
-        },
         municipal: {
           azul: "#010a26",
           verde: "#3e5902",

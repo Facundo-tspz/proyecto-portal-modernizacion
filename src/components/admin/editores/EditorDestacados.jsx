@@ -44,10 +44,10 @@ function TarjetaBorrador({ item, enVivo }) {
       className={`rounded-2xl p-px ${
         item.activo === false
           ? 'bg-gradient-to-br from-amber-500/40 via-transparent to-amber-500/20'
-          : 'bg-gradient-to-br from-panel-acento-1/30 via-transparent to-panel-acento-2/30'
+          : 'bg-gradient-to-br from-indigo-500/30 via-transparent to-cyan-400/30'
       }`}
     >
-      <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-4 sm:p-5">
+      <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-4 sm:p-5">
         {item.activo === false && (
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-300">
             <EyeOff size={13} /> Oculto (no se ve en el portal)
@@ -56,25 +56,25 @@ function TarjetaBorrador({ item, enVivo }) {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="space-y-3">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-panel-texto">Título</span>
+              <span className="mb-1 block text-sm font-medium text-slate-300">Título</span>
               <input
                 type="text"
                 value={item.titulo}
                 onChange={(e) => item.onCambio('titulo', e.target.value)}
-                className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-panel-texto">Leyenda</span>
+              <span className="mb-1 block text-sm font-medium text-slate-300">Leyenda</span>
               <textarea
                 value={item.leyenda}
                 onChange={(e) => item.onCambio('leyenda', e.target.value)}
                 rows={2}
-                className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-panel-texto">
+              <span className="mb-1 block text-sm font-medium text-slate-300">
                 Link (opcional)
               </span>
               <input
@@ -82,11 +82,11 @@ function TarjetaBorrador({ item, enVivo }) {
                 value={item.link}
                 onChange={(e) => item.onCambio('link', e.target.value)}
                 placeholder="https://…"
-                className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
               />
             </label>
             <div>
-              <span className="mb-1 block text-sm font-medium text-panel-texto">Imagen</span>
+              <span className="mb-1 block text-sm font-medium text-slate-300">Imagen</span>
               <div className="flex flex-wrap items-center gap-2">
                 {item.imagen_url ? (
                   <img
@@ -95,9 +95,9 @@ function TarjetaBorrador({ item, enVivo }) {
                     className="h-16 aspect-video rounded-lg object-cover"
                   />
                 ) : (
-                  <span className="text-xs text-panel-texto-suave">Sin imagen</span>
+                  <span className="text-xs text-slate-500">Sin imagen</span>
                 )}
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm font-medium text-panel-texto transition-colors hover:bg-panel-hover">
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10">
                   <ImagePlus size={15} />
                   Elegir
                   <input
@@ -114,16 +114,16 @@ function TarjetaBorrador({ item, enVivo }) {
                   />
                 </label>
               </div>
-              <p className="mt-1 text-xs text-panel-texto-suave">Recomendado: 1280 × 720 (16:9)</p>
+              <p className="mt-1 text-xs text-slate-500">Recomendado: 1280 × 720 (16:9)</p>
             </div>
           </div>
 
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-panel-texto-suave">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
               Vista previa
             </p>
             <div
-              className={`group overflow-hidden rounded-2xl border border-panel-borde ${
+              className={`group overflow-hidden rounded-2xl border border-white/10 ${
                 item.activo === false ? 'opacity-50' : ''
               }`}
             >
@@ -133,10 +133,10 @@ function TarjetaBorrador({ item, enVivo }) {
                 className="w-full aspect-video object-cover"
               />
               <div className="px-4 py-3">
-                <h4 className="text-sm font-bold text-panel-texto">
+                <h4 className="text-sm font-bold text-slate-100">
                   {item.titulo || 'Título'}
                 </h4>
-                <p className="mt-1 line-clamp-2 text-xs text-panel-texto-suave">
+                <p className="mt-1 line-clamp-2 text-xs text-slate-400">
                   {item.leyenda || 'Leyenda…'}
                 </p>
               </div>
@@ -260,15 +260,15 @@ function EditorDestacados() {
 
   return (
     <div>
-      <div className="inline-flex rounded-xl bg-panel-hover p-1">
+      <div className="inline-flex rounded-xl bg-white/5 p-1">
         {categorias.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setCategoriaActiva(cat.id)}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               categoriaActiva === cat.id
-                ? 'bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 text-white'
-                : 'text-panel-texto hover:bg-panel-hover'
+                ? 'bg-gradient-to-r from-indigo-500 to-cyan-400 text-white'
+                : 'text-slate-300 hover:bg-white/5'
             }`}
           >
             {cat.nombre}
@@ -277,17 +277,17 @@ function EditorDestacados() {
       </div>
 
       {cargando ? (
-        <p className="mt-6 text-sm text-panel-texto-suave">Cargando…</p>
+        <p className="mt-6 text-sm text-slate-400">Cargando…</p>
       ) : (
         <div className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-panel-texto-suave">
+            <p className="text-sm text-slate-400">
               {items.length} / {MAX_ITEMS} tarjetas en esta categoría
             </p>
             <button
               onClick={() => setNuevaAbierta((v) => !v)}
               disabled={completo}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
             >
               <Plus size={16} /> Agregar tarjeta
             </button>
@@ -304,29 +304,29 @@ function EditorDestacados() {
               onSubmit={crearNueva}
               className="rounded-2xl p-px bg-gradient-to-br from-emerald-500/30 via-transparent to-cyan-400/30"
             >
-              <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-4">
-                <h4 className="text-sm font-semibold text-panel-texto">Nueva tarjeta</h4>
+              <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-4">
+                <h4 className="text-sm font-semibold text-slate-100">Nueva tarjeta</h4>
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <input
                     type="text"
                     value={nueva.titulo}
                     onChange={(e) => setNueva({ ...nueva, titulo: e.target.value })}
                     placeholder="Título"
-                    className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
                   />
                   <input
                     type="url"
                     value={nueva.link}
                     onChange={(e) => setNueva({ ...nueva, link: e.target.value })}
                     placeholder="Link (opcional)"
-                    className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
+                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
                   />
                   <textarea
                     value={nueva.leyenda}
                     onChange={(e) => setNueva({ ...nueva, leyenda: e.target.value })}
                     placeholder="Leyenda"
                     rows={2}
-                    className="rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none sm:col-span-2"
+                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none sm:col-span-2"
                   />
                 </div>
                 <button
@@ -344,12 +344,12 @@ function EditorDestacados() {
           {items.map((it, i) => (
             <div key={it.id}>
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs text-panel-texto-suave">#{it.orden}</span>
+                <span className="text-xs text-slate-500">#{it.orden}</span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => mover(i, -1)}
                     disabled={i === 0}
-                    className="rounded-lg p-1.5 text-panel-texto hover:bg-panel-hover disabled:opacity-30"
+                    className="rounded-lg p-1.5 text-slate-300 hover:bg-white/5 disabled:opacity-30"
                     aria-label="Subir"
                     title="Subir en el orden"
                   >
@@ -358,7 +358,7 @@ function EditorDestacados() {
                   <button
                     onClick={() => mover(i, 1)}
                     disabled={i === items.length - 1}
-                    className="rounded-lg p-1.5 text-panel-texto hover:bg-panel-hover disabled:opacity-30"
+                    className="rounded-lg p-1.5 text-slate-300 hover:bg-white/5 disabled:opacity-30"
                     aria-label="Bajar"
                     title="Bajar en el orden"
                   >
@@ -366,7 +366,7 @@ function EditorDestacados() {
                   </button>
                   <button
                     onClick={() => actualizarItem(it.id, 'activo', !it.activo)}
-                    className="rounded-lg p-1.5 text-panel-texto hover:bg-panel-hover"
+                    className="rounded-lg p-1.5 text-slate-300 hover:bg-white/5"
                     aria-label={it.activo ? 'Ocultar' : 'Mostrar'}
                     title={it.activo ? 'Ocultar (no se ve en el portal)' : 'Mostrar en el portal'}
                   >
@@ -374,7 +374,7 @@ function EditorDestacados() {
                   </button>
                   <button
                     onClick={() => guardarUno(it)}
-                    className="rounded-lg p-1.5 text-panel-acento-texto hover:bg-panel-hover"
+                    className="rounded-lg p-1.5 text-cyan-300 hover:bg-white/5"
                     aria-label="Guardar cambios"
                     title="Guardar cambios de esta tarjeta"
                   >
@@ -382,7 +382,7 @@ function EditorDestacados() {
                   </button>
                   <button
                     onClick={() => eliminar(it.id)}
-                    className="rounded-lg p-1.5 text-rose-300 hover:bg-panel-hover"
+                    className="rounded-lg p-1.5 text-rose-300 hover:bg-white/5"
                     aria-label="Eliminar"
                   >
                     <Trash2 size={16} />
