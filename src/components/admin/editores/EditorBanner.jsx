@@ -81,26 +81,26 @@ function EditorBanner() {
   }
 
   const vistaPrevia = (
-    <div className="relative overflow-hidden rounded-xl border border-white/10">
+    <div className="relative overflow-hidden rounded-xl border border-panel-borde">
       {form.imagen_url ? (
         <>
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${form.imagen_url})` }}
           />
-          <div className="absolute inset-0 bg-[#0b1220]/60" />
+          <div className="absolute inset-0 bg-panel-fondo/60" />
         </>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-cyan-500" />
+        <div className="absolute inset-0 bg-gradient-to-r from-panel-acento-1 to-panel-acento-2" />
       )}
       <div className="relative flex items-center gap-3 px-4 py-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-400/25 text-cyan-300">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-panel-acento-2/25 text-panel-acento-texto">
           <ImagePlus size={18} />
         </div>
-        <p className="flex-1 text-sm font-medium text-slate-100">
+        <p className="flex-1 text-sm font-medium text-panel-texto">
           {form.texto || 'Texto del banner…'}
         </p>
-        {form.link && <span className="text-xs font-semibold text-cyan-300">Ver más →</span>}
+        {form.link && <span className="text-xs font-semibold text-panel-acento-texto">Ver más →</span>}
       </div>
     </div>
   )
@@ -113,23 +113,23 @@ function EditorBanner() {
             type="checkbox"
             checked={form.activo}
             onChange={(e) => setForm({ ...form, activo: e.target.checked })}
-            className="h-4 w-4 accent-cyan-400"
+            className="h-4 w-4 accent-panel-acento-borde"
           />
-          <span className="text-sm text-slate-300">Banner activo</span>
+          <span className="text-sm text-panel-texto">Banner activo</span>
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-300">Texto</span>
+          <span className="mb-1 block text-sm font-medium text-panel-texto">Texto</span>
           <textarea
             value={form.texto}
             onChange={(e) => setForm({ ...form, texto: e.target.value })}
             rows={3}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+            className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
           />
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-300">
+          <span className="mb-1 block text-sm font-medium text-panel-texto">
             Link (opcional)
           </span>
           <input
@@ -137,12 +137,12 @@ function EditorBanner() {
             value={form.link}
             onChange={(e) => setForm({ ...form, link: e.target.value })}
             placeholder="https://…"
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+            className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
           />
         </label>
 
         <div>
-          <span className="mb-1 block text-sm font-medium text-slate-300">Imagen de fondo</span>
+          <span className="mb-1 block text-sm font-medium text-panel-texto">Imagen de fondo</span>
           <div className="flex flex-wrap items-center gap-2">
             {form.imagen_url && (
               <img
@@ -151,7 +151,7 @@ function EditorBanner() {
                 className="h-20 w-40 rounded-lg object-cover"
               />
             )}
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-panel-borde bg-panel-hover px-4 py-2 text-sm font-medium text-panel-texto transition-colors hover:bg-panel-hover">
               <ImagePlus size={16} />
               Elegir imagen
               <input type="file" accept="image/*" onChange={elegirImagen} className="hidden" />
@@ -160,19 +160,19 @@ function EditorBanner() {
               <button
                 type="button"
                 onClick={() => setForm({ ...form, imagen_url: '' })}
-                className="rounded-xl px-3 py-2 text-sm text-rose-300 hover:bg-white/5"
+                className="rounded-xl px-3 py-2 text-sm text-rose-300 hover:bg-panel-hover"
               >
                 Quitar
               </button>
             )}
           </div>
-          <p className="mt-1 text-xs text-slate-500">Recomendado: 1600 × 400 · se recorta automáticamente</p>
+          <p className="mt-1 text-xs text-panel-texto-suave">Recomendado: 1600 × 400 · se recorta automáticamente</p>
         </div>
 
         <button
           type="submit"
           disabled={guardando}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
         >
           {guardando ? (
             <RefreshCw size={16} className="animate-spin" />
@@ -184,7 +184,7 @@ function EditorBanner() {
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-panel-texto-suave">
           Vista previa
         </p>
         {vistaPrevia}

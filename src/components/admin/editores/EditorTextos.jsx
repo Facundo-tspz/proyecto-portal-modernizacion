@@ -71,7 +71,7 @@ function EditorTextos() {
     else toast.success('Textos guardados correctamente')
   }
 
-  if (cargando) return <p className="text-sm text-slate-400">Cargando…</p>
+  if (cargando) return <p className="text-sm text-panel-texto-suave">Cargando…</p>
 
   return (
     <div>
@@ -79,16 +79,16 @@ function EditorTextos() {
         {secciones.map((seccion) => {
           const Icono = seccion.Icono
           return (
-            <div key={seccion.id} className="rounded-2xl p-px bg-gradient-to-br from-indigo-500/30 via-transparent to-cyan-400/30">
-              <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-4 sm:p-5">
-                <h4 className="flex items-center gap-2 text-sm font-semibold text-slate-100">
-                  <Icono size={16} className="text-cyan-300" />
+            <div key={seccion.id} className="rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/30 via-transparent to-panel-acento-2/30">
+              <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-4 sm:p-5">
+                <h4 className="flex items-center gap-2 text-sm font-semibold text-panel-texto">
+                  <Icono size={16} className="text-panel-acento-texto" />
                   {seccion.nombre}
                 </h4>
                 <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {seccion.campos.map(([clave, etiqueta, tipo]) => (
                     <label key={clave} className="block">
-                      <span className="mb-1 block text-sm font-medium text-slate-300">
+                      <span className="mb-1 block text-sm font-medium text-panel-texto">
                         {etiqueta}
                       </span>
                       {tipo === 'area' ? (
@@ -96,14 +96,14 @@ function EditorTextos() {
                           value={todos[clave] || ''}
                           onChange={(e) => setTodos({ ...todos, [clave]: e.target.value })}
                           rows={3}
-                          className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+                          className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
                         />
                       ) : (
                         <input
                           type="text"
                           value={todos[clave] || ''}
                           onChange={(e) => setTodos({ ...todos, [clave]: e.target.value })}
-                          className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+                          className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
                         />
                       )}
                     </label>
@@ -118,7 +118,7 @@ function EditorTextos() {
       <button
         onClick={guardar}
         disabled={guardando}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
       >
         {guardando ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
         Guardar todos los textos

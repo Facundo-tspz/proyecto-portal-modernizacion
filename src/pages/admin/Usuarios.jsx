@@ -28,20 +28,20 @@ function ModalConfirmacion({ abierto, titulo, mensaje, confirmar, cancelar }) {
   if (!abierto) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-      <div className="w-full max-w-sm rounded-2xl p-px bg-gradient-to-br from-indigo-500/50 via-transparent to-cyan-400/50">
-        <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-6">
-          <h3 className="text-base font-bold text-slate-100">{titulo}</h3>
-          <p className="mt-2 text-sm text-slate-400">{mensaje}</p>
+      <div className="w-full max-w-sm rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/50 via-transparent to-panel-acento-2/50">
+        <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-6">
+          <h3 className="text-base font-bold text-panel-texto">{titulo}</h3>
+          <p className="mt-2 text-sm text-panel-texto-suave">{mensaje}</p>
           <div className="mt-5 flex justify-end gap-2">
             <button
               onClick={cancelar}
-              className="rounded-xl bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10"
+              className="rounded-xl bg-panel-hover px-4 py-2 text-sm font-medium text-panel-texto transition-colors hover:bg-panel-hover"
             >
               Cancelar
             </button>
             <button
               onClick={confirmar}
-              className="rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105"
+              className="rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105"
             >
               Confirmar
             </button>
@@ -131,10 +131,10 @@ function Usuarios() {
     <div className="p-4 sm:p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">
+          <h1 className="text-2xl font-bold text-panel-texto">
             {seccion === 'nuevo' ? 'Nuevo usuario' : 'Usuarios'}
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-panel-texto-suave">
             {seccion === 'nuevo'
               ? 'Alta de cuenta para el panel'
               : 'Gestioná las cuentas y los roles del panel'}
@@ -144,7 +144,7 @@ function Usuarios() {
           {seccion === 'nuevo' ? (
             <button
               onClick={() => setSearchParams({ seccion: 'lista' })}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/5"
+              className="inline-flex items-center gap-2 rounded-xl border border-panel-borde px-4 py-2 text-sm font-semibold text-panel-texto transition-colors hover:bg-panel-hover"
             >
               <ArrowLeft size={16} />
               Volver a la lista
@@ -153,7 +153,7 @@ function Usuarios() {
             <>
               <button
                 onClick={cargarUsuarios}
-                className="rounded-lg p-2 text-slate-200 transition-colors hover:bg-white/5"
+                className="rounded-lg p-2 text-panel-texto transition-colors hover:bg-panel-hover"
                 aria-label="Recargar lista"
                 title="Recargar lista"
               >
@@ -161,7 +161,7 @@ function Usuarios() {
               </button>
               <button
                 onClick={() => setSearchParams({ seccion: 'nuevo' })}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
               >
                 <UserPlus size={16} />
                 Nuevo usuario
@@ -174,48 +174,48 @@ function Usuarios() {
       {seccion === 'nuevo' ? (
         <form
           onSubmit={crearUsuario}
-          className="mt-6 rounded-2xl p-px bg-gradient-to-br from-indigo-500/40 via-transparent to-cyan-400/40"
+          className="mt-6 rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/40 via-transparent to-panel-acento-2/40"
         >
-          <div className="grid grid-cols-1 gap-4 rounded-[calc(1rem-1px)] bg-[#101a2e] p-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 rounded-[calc(1rem-1px)] bg-panel-superficie p-5 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-300">Nombre</span>
+              <span className="mb-1 block text-sm font-medium text-panel-texto">Nombre</span>
               <input
                 type="text"
                 value={nuevo.nombre}
                 onChange={(e) => setNuevo({ ...nuevo, nombre: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+                className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
                 placeholder="Nombre del integrante"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-300">Email *</span>
+              <span className="mb-1 block text-sm font-medium text-panel-texto">Email *</span>
               <input
                 type="email"
                 value={nuevo.email}
                 onChange={(e) => setNuevo({ ...nuevo, email: e.target.value })}
                 required
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+                className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
                 placeholder="correo@municipio.gob.ar"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-300">Contraseña *</span>
+              <span className="mb-1 block text-sm font-medium text-panel-texto">Contraseña *</span>
               <input
                 type="password"
                 value={nuevo.password}
                 onChange={(e) => setNuevo({ ...nuevo, password: e.target.value })}
                 required
                 minLength={8}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+                className="w-full rounded-xl border border-panel-borde bg-panel-hover px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
                 placeholder="Mínimo 8 caracteres"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-300">Rol</span>
+              <span className="mb-1 block text-sm font-medium text-panel-texto">Rol</span>
               <select
                 value={nuevo.rol}
                 onChange={(e) => setNuevo({ ...nuevo, rol: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-[#101a2e] px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
+                className="w-full rounded-xl border border-panel-borde bg-panel-superficie px-3 py-2 text-sm text-panel-texto focus:border-panel-acento-borde focus:outline-none"
               >
                 {roles.map((r) => (
                   <option key={r} value={r}>
@@ -228,7 +228,7 @@ function Usuarios() {
               <button
                 type="submit"
                 disabled={enviando}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
               >
                 <ShieldCheck size={16} />
                 {enviando ? 'Creando…' : 'Crear usuario'}
@@ -237,11 +237,11 @@ function Usuarios() {
           </div>
         </form>
       ) : (
-      <div className="mt-6 overflow-hidden rounded-2xl p-px bg-gradient-to-br from-indigo-500/30 via-transparent to-cyan-400/30">
-        <div className="overflow-x-auto rounded-[calc(1rem-1px)] bg-[#101a2e]">
+      <div className="mt-6 overflow-hidden rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/30 via-transparent to-panel-acento-2/30">
+        <div className="overflow-x-auto rounded-[calc(1rem-1px)] bg-panel-superficie">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-slate-400">
+              <tr className="border-b border-panel-borde text-panel-texto-suave">
                 <th className="px-4 py-3 font-medium">Nombre</th>
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Rol</th>
@@ -253,14 +253,14 @@ function Usuarios() {
             <tbody>
               {cargando && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
+                  <td colSpan={6} className="px-4 py-6 text-center text-panel-texto-suave">
                     Cargando…
                   </td>
                 </tr>
               )}
               {!cargando && usuarios.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
+                  <td colSpan={6} className="px-4 py-6 text-center text-panel-texto-suave">
                     No hay usuarios
                   </td>
                 </tr>
@@ -268,15 +268,15 @@ function Usuarios() {
               {usuarios.map((usuario) => (
                 <tr
                   key={usuario.id}
-                  className="border-b border-white/5 text-slate-200 last:border-0"
+                  className="border-b border-panel-borde text-panel-texto last:border-0"
                 >
                   <td className="px-4 py-3 font-medium">{usuario.nombre}</td>
-                  <td className="break-all px-4 py-3 text-slate-400">{usuario.email}</td>
+                  <td className="break-all px-4 py-3 text-panel-texto-suave">{usuario.email}</td>
                   <td className="px-4 py-3">
                     <select
                       value={usuario.rol}
                       onChange={(e) => cambiarRol(usuario.id, e.target.value)}
-                      className="rounded-lg border border-white/10 bg-[#101a2e] px-2 py-1 text-xs capitalize text-slate-200"
+                      className="rounded-lg border border-panel-borde bg-panel-superficie px-2 py-1 text-xs capitalize text-panel-texto"
                     >
                       {roles.map((r) => (
                         <option key={r} value={r}>
@@ -300,14 +300,14 @@ function Usuarios() {
                         usuario.ultimo_acceso &&
                         Date.now() - new Date(usuario.ultimo_acceso).getTime() <=
                           MINUTOS_EN_LINEA * 60 * 1000 && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-cyan-500/15 px-2 py-0.5 text-xs font-semibold text-cyan-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-panel-acento-2/15 px-2 py-0.5 text-xs font-semibold text-panel-acento-texto">
                             <Wifi size={12} />
                             En línea
                           </span>
                         )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-400">
+                  <td className="px-4 py-3 text-panel-texto-suave">
                     <span
                       title={
                         usuario.ultimo_acceso || usuario.last_sign_in_at
@@ -331,7 +331,7 @@ function Usuarios() {
                           ejecutar: () => toggleActivo(usuario.id, !usuario.activo),
                         })
                       }
-                      className="rounded-lg px-2 py-1 text-xs font-semibold text-cyan-300 transition-colors hover:bg-white/5"
+                      className="rounded-lg px-2 py-1 text-xs font-semibold text-panel-acento-texto transition-colors hover:bg-panel-hover"
                     >
                       {usuario.activo ? 'Desactivar' : 'Activar'}
                     </button>

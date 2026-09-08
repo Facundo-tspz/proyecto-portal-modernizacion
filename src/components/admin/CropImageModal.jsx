@@ -106,13 +106,13 @@ function CropImageModal({ abierto, fuente, aspect, recomendacion, onCerrar, onLi
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-      <div className="w-full max-w-2xl rounded-2xl p-px bg-gradient-to-br from-indigo-500/50 via-transparent to-cyan-400/50">
-        <div className="rounded-[calc(1rem-1px)] bg-[#101a2e] p-5">
+      <div className="w-full max-w-2xl rounded-2xl p-px bg-gradient-to-br from-panel-acento-1/50 via-transparent to-panel-acento-2/50">
+        <div className="rounded-[calc(1rem-1px)] bg-panel-superficie p-5">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-100">Ajustar imagen</h3>
+            <h3 className="text-base font-bold text-panel-texto">Ajustar imagen</h3>
             <button
               onClick={onCerrar}
-              className="rounded-lg p-1.5 text-slate-300 hover:bg-white/5"
+              className="rounded-lg p-1.5 text-panel-texto hover:bg-panel-hover"
               aria-label="Cerrar"
             >
               <X size={20} />
@@ -120,10 +120,10 @@ function CropImageModal({ abierto, fuente, aspect, recomendacion, onCerrar, onLi
           </div>
 
           {recomendacion && (
-            <p className="mt-1 text-xs text-slate-400">Tamaño recomendado: {recomendacion}</p>
+            <p className="mt-1 text-xs text-panel-texto-suave">Tamaño recomendado: {recomendacion}</p>
           )}
 
-          <div className="mt-4 max-h-[55vh] overflow-auto rounded-xl border border-white/10 bg-black/30">
+          <div className="mt-4 max-h-[55vh] overflow-auto rounded-xl border border-panel-borde bg-black/30">
             {imagen && (
               <ReactCrop
                 crop={recorte}
@@ -131,7 +131,7 @@ function CropImageModal({ abierto, fuente, aspect, recomendacion, onCerrar, onLi
                 onComplete={(c) => setRecorteFinal(c)}
                 aspect={aspect}
                 ruleOfThirds
-                className="[&_.ReactCrop__crop-selection]:border-cyan-400"
+                className="[&_.ReactCrop__crop-selection]:border-panel-acento-borde"
               >
                 <img ref={imageRef} src={imagen.src} onLoad={enImagenCargada} alt="Recorte" />
               </ReactCrop>
@@ -143,14 +143,14 @@ function CropImageModal({ abierto, fuente, aspect, recomendacion, onCerrar, onLi
           <div className="mt-4 flex justify-end gap-2">
             <button
               onClick={onCerrar}
-              className="rounded-xl bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10"
+              className="rounded-xl bg-panel-hover px-4 py-2 text-sm font-medium text-panel-texto transition-colors hover:bg-panel-hover"
             >
               Cancelar
             </button>
             <button
               onClick={confirmar}
               disabled={subiendo || !recorteFinal?.width}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105 disabled:opacity-60"
             >
               {subiendo ? (
                 'Procesando…'

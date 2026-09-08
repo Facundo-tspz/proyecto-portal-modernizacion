@@ -32,12 +32,12 @@ function Contenido() {
 
   return (
     <div className="p-4 sm:p-8">
-      <h1 className="text-2xl font-bold text-slate-100">Gestión de contenido</h1>
-      <p className="mt-1 text-sm text-slate-400">
+      <h1 className="text-2xl font-bold text-panel-texto">Gestión de contenido</h1>
+      <p className="mt-1 text-sm text-panel-texto-suave">
         Editá el contenido del portal público. Los cambios se guardan y se ven al instante.
       </p>
 
-      <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-white/10 bg-white/5 p-1.5">
+      <div className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-panel-borde bg-panel-hover p-1.5">
         {pestanas.map((p) => {
           const Icono = p.Icono
           return (
@@ -46,8 +46,8 @@ function Contenido() {
               onClick={() => cambiarPestana(p.id)}
               className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
                 activa === p.id
-                  ? 'bg-gradient-to-r from-indigo-500 to-cyan-400 text-white'
-                  : 'text-slate-300 hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 text-white'
+                  : 'text-panel-texto hover:bg-panel-hover'
               }`}
             >
               <Icono size={16} />

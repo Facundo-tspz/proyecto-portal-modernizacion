@@ -3,24 +3,24 @@ import { BookOpen, FileDown } from 'lucide-react'
 function Manual() {
   return (
     <div className="p-4 sm:p-8">
-      <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+      <h1 className="text-2xl font-bold text-panel-texto">
         Manual de usuario
       </h1>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-1 text-sm text-panel-texto-suave">
         Guía de uso del panel administrativo.
       </p>
 
-      <div className="mt-8 flex flex-col items-center justify-center gap-4 border border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-10 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-white shadow-lg">
+      <div className="mt-8 flex flex-col items-center justify-center gap-4 border border-dashed border-panel-borde rounded-2xl p-10 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-panel-acento-1 to-panel-acento-2 text-white shadow-lg">
           <BookOpen size={30} />
         </div>
-        <p className="max-w-md text-sm text-slate-500 dark:text-slate-400">
+        <p className="max-w-md text-sm text-panel-texto-suave">
           El manual de usuario se está preparando. Mostrará cómo usar cada
           sección del panel según el rol y los pasos para gestionar tickets,
           contenido y usuarios.
         </p>
         <button
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-panel-acento-1 to-panel-acento-2 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
         >
           <FileDown size={16} />
           Descargar PDF (próximamente)
