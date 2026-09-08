@@ -54,8 +54,8 @@ const grupos = [
     icono: Users,
     roles: ['admin'],
     items: [
-      { nombre: 'Lista de usuarios', ruta: '/mg-tinogasta/usuarios' },
-      { nombre: 'Nuevo usuario', ruta: '/mg-tinogasta/usuarios' },
+      { nombre: 'Lista de usuarios', ruta: '/mg-tinogasta/usuarios?seccion=lista' },
+      { nombre: 'Nuevo usuario', ruta: '/mg-tinogasta/usuarios?seccion=nuevo' },
     ],
   },
   {
@@ -63,7 +63,7 @@ const grupos = [
     etiqueta: 'Configuración',
     icono: Settings,
     roles: ['admin'],
-    items: [{ nombre: 'Preferencias', ruta: '/mg-tinogasta/panel' }],
+    items: [{ nombre: 'Preferencias', ruta: '/mg-tinogasta/configuracion' }],
   },
 ]
 
@@ -72,6 +72,7 @@ const nombresRuta = {
   '/mg-tinogasta/tickets': ['Mesa de ayuda', 'Todos los tickets'],
   '/mg-tinogasta/contenido': ['Contenido'],
   '/mg-tinogasta/usuarios': ['Usuarios', 'Lista de usuarios'],
+  '/mg-tinogasta/configuracion': ['Configuración', 'Preferencias'],
   '/mg-tinogasta/manual': ['Manual de usuario'],
 }
 
@@ -80,6 +81,11 @@ const nombresSeccion = {
   destacados: 'Destacados',
   accesos: 'Accesos útiles',
   textos: 'Textos / Quiénes Somos',
+}
+
+const nombresSeccionUsuarios = {
+  lista: 'Lista de usuarios',
+  nuevo: 'Nuevo usuario',
 }
 
 function obtenerSeccion(search) {
@@ -91,6 +97,9 @@ function Breadcrumb({ ruta, search }) {
   const seccion = obtenerSeccion(search)
   if (ruta === '/mg-tinogasta/contenido' && seccion && nombresSeccion[seccion]) {
     partes.push(nombresSeccion[seccion])
+  }
+  if (ruta === '/mg-tinogasta/usuarios' && seccion && nombresSeccionUsuarios[seccion]) {
+    partes[1] = nombresSeccionUsuarios[seccion]
   }
   return (
     <div className="flex items-center gap-1.5 text-xs text-slate-400">

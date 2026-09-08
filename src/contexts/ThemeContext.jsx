@@ -1,15 +1,18 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
 
 const ThemeContext = createContext(null)
 
+function temaInicial() {
+  const guardado = localStorage.getItem('tema')
+  if (guardado) return guardado
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'oscuro'
+    : 'claro'
+}
+
 export function ThemeProvider({ children }) {
-  const [tema, setTema] = useState(() => {
-    const guardado = localStorage.getItem('tema')
-    if (guardado) return guardado
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'oscuro'
-      : 'claro'
-  })
+  const [tema, setTema] = useState(temaInicial)
 
   useEffect(() => {
     const html = document.documentElement
@@ -23,8 +26,36 @@ export function ThemeProvider({ children }) {
     }
   }, [tema])
 
-  const alternarTema = () =>
-    setTema((temaActual) => (temaActual === 'oscuro' ? 'claro' : 'oscuro'))
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        supabase
+          .from('perfiles')
+          .select('tema')
+          .eq('id', data.session.user.id)
+          .single()
+          .then(({ data: perfil }) => {
+            if (perfil?.tema === 'claro' || perfil?.tema === 'oscuro') {
+              setTema(perfil.tema)
+            } else if (perfil?.tema) {
+              localStorage.removeItem('tema')
+            }
+          })
+      }
+    })
+  }, [])
+
+  function alternarTema() {
+    setTema((temaActual) => {
+      const proximo = temaActual === 'oscuro' ? 'claro' : 'oscuro'
+      supabase.auth.getUser().then(({ data }) => {
+        if (data.user) {
+          supabase.rpc('cambiar_mi_tema', { p_tema: proximo })
+        }
+      })
+      return proximo
+    })
+  }
 
   return (
     <ThemeContext.Provider value={{ tema, alternarTema }}>

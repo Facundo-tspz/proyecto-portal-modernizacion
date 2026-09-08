@@ -5,6 +5,9 @@ import { Lock, Mail, LogIn, Sparkles, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { toast } from 'sonner'
 
+const CLAVE_INTENTOS = 'modernizacion_login_intentos'
+const MAX_INTENTOS = 3
+
 function Login() {
   const { iniciarSesion } = useAuth()
   const navigate = useNavigate()
@@ -12,6 +15,10 @@ function Login() {
   const [password, setPassword] = useState('')
   const [verPassword, setVerPassword] = useState(false)
   const [enviando, setEnviando] = useState(false)
+  const [bloqueado, setBloqueado] = useState(() => {
+    const cuenta = Number(localStorage.getItem(CLAVE_INTENTOS) || 0)
+    return cuenta >= MAX_INTENTOS
+  })
 
   async function manejarEnvio(evento) {
     evento.preventDefault()
@@ -19,10 +26,21 @@ function Login() {
     const { error } = await iniciarSesion(email, password)
 
     if (error) {
-      toast.error(error.message || 'No se pudo iniciar sesión.')
+      const cuenta = Number(localStorage.getItem(CLAVE_INTENTOS) || 0) + 1
+      localStorage.setItem(CLAVE_INTENTOS, String(cuenta))
+      if (cuenta >= MAX_INTENTOS) {
+        setBloqueado(true)
+        toast.error(
+          'Contraseña incorrecta. Contactá al administrador para recuperar tu acceso.'
+        )
+      } else {
+        toast.error(error.message || 'No se pudo iniciar sesión.')
+      }
       setEnviando(false)
       return
     }
+    localStorage.removeItem(CLAVE_INTENTOS)
+    setBloqueado(false)
     toast.success('Bienvenido al panel')
     navigate('/mg-tinogasta/panel')
   }
@@ -109,6 +127,13 @@ function Login() {
                 <LogIn size={16} />
               </button>
             </form>
+
+            {bloqueado && (
+              <div className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-center text-sm text-amber-200">
+                Contraseña incorrecta. Contactá al administrador para recuperar
+                tu acceso.
+              </div>
+            )}
           </div>
         </div>
 

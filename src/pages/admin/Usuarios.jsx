@@ -1,9 +1,28 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { UserPlus, RefreshCw, ShieldCheck } from 'lucide-react'
+import { UserPlus, RefreshCw, ShieldCheck, ArrowLeft, Wifi } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
 const roles = ['admin', 'tecnico', 'editor']
+const MINUTOS_EN_LINEA = 5
+
+function formatoTiempoRelativo(fecha) {
+  if (!fecha) return '—'
+  const milis = Date.now() - new Date(fecha).getTime()
+  if (milis < 60 * 1000) return 'ahora'
+  const minutos = Math.floor(milis / (60 * 1000))
+  if (minutos < 60) return `${minutos}min`
+  const horas = Math.floor(minutos / 60)
+  if (horas < 24) return `${horas}h`
+  const dias = Math.floor(horas / 24)
+  if (dias < 30) return `${dias}d`
+  return new Date(fecha).toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
 
 function ModalConfirmacion({ abierto, titulo, mensaje, confirmar, cancelar }) {
   if (!abierto) return null
@@ -34,9 +53,10 @@ function ModalConfirmacion({ abierto, titulo, mensaje, confirmar, cancelar }) {
 }
 
 function Usuarios() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const seccion = searchParams.get('seccion') || 'lista'
   const [usuarios, setUsuarios] = useState([])
   const [cargando, setCargando] = useState(true)
-  const [mostrarFormulario, setMostrarFormulario] = useState(false)
   const [nuevo, setNuevo] = useState({ email: '', nombre: '', password: '', rol: 'editor' })
   const [enviando, setEnviando] = useState(false)
   const [confirmarAccion, setConfirmarAccion] = useState(null)
@@ -77,7 +97,7 @@ function Usuarios() {
     }
     toast.success('Usuario creado')
     setNuevo({ email: '', nombre: '', password: '', rol: 'editor' })
-    setMostrarFormulario(false)
+    setSearchParams({ seccion: 'lista' })
     cargarUsuarios()
   }
 
@@ -111,31 +131,47 @@ function Usuarios() {
     <div className="p-4 sm:p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Usuarios</h1>
+          <h1 className="text-2xl font-bold text-slate-100">
+            {seccion === 'nuevo' ? 'Nuevo usuario' : 'Usuarios'}
+          </h1>
           <p className="mt-1 text-sm text-slate-400">
-            Gestioná las cuentas y los roles del panel
+            {seccion === 'nuevo'
+              ? 'Alta de cuenta para el panel'
+              : 'Gestioná las cuentas y los roles del panel'}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={cargarUsuarios}
-            className="rounded-lg p-2 text-slate-200 transition-colors hover:bg-white/5"
-            aria-label="Recargar lista"
-            title="Recargar lista"
-          >
-            <RefreshCw size={18} />
-          </button>
-          <button
-            onClick={() => setMostrarFormulario((v) => !v)}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
-          >
-            <UserPlus size={16} />
-            Nuevo usuario
-          </button>
+          {seccion === 'nuevo' ? (
+            <button
+              onClick={() => setSearchParams({ seccion: 'lista' })}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/5"
+            >
+              <ArrowLeft size={16} />
+              Volver a la lista
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={cargarUsuarios}
+                className="rounded-lg p-2 text-slate-200 transition-colors hover:bg-white/5"
+                aria-label="Recargar lista"
+                title="Recargar lista"
+              >
+                <RefreshCw size={18} />
+              </button>
+              <button
+                onClick={() => setSearchParams({ seccion: 'nuevo' })}
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow transition-transform hover:scale-105"
+              >
+                <UserPlus size={16} />
+                Nuevo usuario
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {mostrarFormulario && (
+      {seccion === 'nuevo' ? (
         <form
           onSubmit={crearUsuario}
           className="mt-6 rounded-2xl p-px bg-gradient-to-br from-indigo-500/40 via-transparent to-cyan-400/40"
@@ -200,8 +236,7 @@ function Usuarios() {
             </div>
           </div>
         </form>
-      )}
-
+      ) : (
       <div className="mt-6 overflow-hidden rounded-2xl p-px bg-gradient-to-br from-indigo-500/30 via-transparent to-cyan-400/30">
         <div className="overflow-x-auto rounded-[calc(1rem-1px)] bg-[#101a2e]">
           <table className="w-full text-left text-sm">
@@ -211,20 +246,21 @@ function Usuarios() {
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Rol</th>
                 <th className="px-4 py-3 font-medium">Estado</th>
+                <th className="px-4 py-3 font-medium">Última conexión</th>
                 <th className="px-4 py-3 font-medium">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {cargando && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
+                  <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
                     Cargando…
                   </td>
                 </tr>
               )}
               {!cargando && usuarios.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
+                  <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
                     No hay usuarios
                   </td>
                 </tr>
@@ -250,14 +286,40 @@ function Usuarios() {
                     </select>
                   </td>
                   <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          usuario.activo
+                            ? 'bg-emerald-500/15 text-emerald-400'
+                            : 'bg-rose-500/15 text-rose-400'
+                        }`}
+                      >
+                        {usuario.activo ? 'Activo' : 'Inactivo'}
+                      </span>
+                      {usuario.activo &&
+                        usuario.ultimo_acceso &&
+                        Date.now() - new Date(usuario.ultimo_acceso).getTime() <=
+                          MINUTOS_EN_LINEA * 60 * 1000 && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-cyan-500/15 px-2 py-0.5 text-xs font-semibold text-cyan-300">
+                            <Wifi size={12} />
+                            En línea
+                          </span>
+                        )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-slate-400">
                     <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${
-                        usuario.activo
-                          ? 'bg-emerald-500/15 text-emerald-400'
-                          : 'bg-rose-500/15 text-rose-400'
-                      }`}
+                      title={
+                        usuario.ultimo_acceso || usuario.last_sign_in_at
+                          ? new Date(
+                              usuario.ultimo_acceso || usuario.last_sign_in_at
+                            ).toLocaleString('es-AR')
+                          : 'Sin actividad'
+                      }
                     >
-                      {usuario.activo ? 'Activo' : 'Inactivo'}
+                      {formatoTiempoRelativo(
+                        usuario.ultimo_acceso || usuario.last_sign_in_at
+                      )}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -280,6 +342,7 @@ function Usuarios() {
           </table>
         </div>
       </div>
+      )}
 
       <ModalConfirmacion
         abierto={!!confirmarAccion}

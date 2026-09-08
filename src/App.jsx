@@ -9,6 +9,7 @@ import Dashboard from './pages/admin/Dashboard'
 import Tickets from './pages/admin/Tickets'
 import Contenido from './pages/admin/Contenido'
 import Usuarios from './pages/admin/Usuarios'
+import Preferencias from './pages/admin/Preferencias'
 import Manual from './pages/admin/Manual'
 import AdminLayout from './layouts/AdminLayout'
 import RutaProtegida from './components/admin/RutaProtegida'
@@ -38,6 +39,7 @@ function App() {
           <Route path="tickets" element={<Tickets />} />
           <Route path="contenido" element={<Contenido />} />
           <Route path="usuarios" element={<Usuarios />} />
+          <Route path="configuracion" element={<Preferencias />} />
           <Route path="manual" element={<Manual />} />
         </Route>
       </Routes>
