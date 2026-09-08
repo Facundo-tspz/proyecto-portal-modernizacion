@@ -42,10 +42,10 @@ const grupos = [
     icono: FileText,
     roles: ['admin', 'editor'],
     items: [
-      { nombre: 'Banner', ruta: '/mg-tinogasta/contenido' },
-      { nombre: 'Destacados', ruta: '/mg-tinogasta/contenido' },
-      { nombre: 'Accesos útiles', ruta: '/mg-tinogasta/contenido' },
-      { nombre: 'Textos / Quiénes Somos', ruta: '/mg-tinogasta/contenido' },
+      { nombre: 'Banner', ruta: '/mg-tinogasta/contenido?seccion=banner' },
+      { nombre: 'Destacados', ruta: '/mg-tinogasta/contenido?seccion=destacados' },
+      { nombre: 'Accesos útiles', ruta: '/mg-tinogasta/contenido?seccion=accesos' },
+      { nombre: 'Textos / Quiénes Somos', ruta: '/mg-tinogasta/contenido?seccion=textos' },
     ],
   },
   {
@@ -75,8 +75,23 @@ const nombresRuta = {
   '/mg-tinogasta/manual': ['Manual de usuario'],
 }
 
-function Breadcrumb({ ruta }) {
-  const partes = nombresRuta[ruta] || []
+const nombresSeccion = {
+  banner: 'Banner',
+  destacados: 'Destacados',
+  accesos: 'Accesos útiles',
+  textos: 'Textos / Quiénes Somos',
+}
+
+function obtenerSeccion(search) {
+  return new URLSearchParams(search).get('seccion')
+}
+
+function Breadcrumb({ ruta, search }) {
+  const partes = [...(nombresRuta[ruta] || [])]
+  const seccion = obtenerSeccion(search)
+  if (ruta === '/mg-tinogasta/contenido' && seccion && nombresSeccion[seccion]) {
+    partes.push(nombresSeccion[seccion])
+  }
   return (
     <div className="flex items-center gap-1.5 text-xs text-slate-400">
       <span>Inicio</span>
@@ -92,12 +107,13 @@ function Breadcrumb({ ruta }) {
   )
 }
 
-function MenuLateral({ rol, ruta, onNavegar, nombre }) {
+function MenuLateral({ rol, ruta, search, onNavegar, nombre }) {
   const gruposVisibles = grupos.filter((g) => g.roles.includes(rol))
+  const rutaCompleta = `${ruta}${search}`
   const [abierto, setAbierto] = useState(() => {
     const inicial = {}
     gruposVisibles.forEach((g) => {
-      const activo = g.items.some((it) => it.ruta.split('?')[0] === ruta)
+      const activo = g.items.some((it) => it.ruta === rutaCompleta)
       inicial[g.id] = activo
     })
     return inicial
@@ -136,7 +152,7 @@ function MenuLateral({ rol, ruta, onNavegar, nombre }) {
               {estaAbierto && (
                 <div className="ml-3 mt-1 space-y-0.5 border-l border-white/10 pl-3">
                   {grupo.items.map((item) => {
-                    const activo = item.ruta.split('?')[0] === ruta
+                    const activo = item.ruta === rutaCompleta
                     return (
                       <NavLink
                         key={item.nombre}
@@ -184,6 +200,7 @@ function AdminLayout() {
 
   const rol = usuario?.perfil?.rol
   const ruta = location.pathname
+  const search = location.search
   const nombre = usuario?.perfil?.nombre || 'Administrador'
 
   async function manejarSalir() {
@@ -194,7 +211,7 @@ function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-[#101a2e] text-slate-100">
       <aside className="hidden w-64 shrink-0 border-r border-white/10 lg:block">
-        <MenuLateral rol={rol} ruta={ruta} onNavegar={() => {}} nombre={nombre} />
+        <MenuLateral rol={rol} ruta={ruta} search={search} onNavegar={() => {}} nombre={nombre} />
       </aside>
 
       <div className="flex flex-1 flex-col">
@@ -209,7 +226,7 @@ function AdminLayout() {
             </button>
             <div>
               <p className="text-sm font-bold text-slate-100">Panel Administrativo</p>
-              <Breadcrumb ruta={ruta} />
+              <Breadcrumb ruta={ruta} search={search} />
             </div>
           </div>
 
@@ -250,7 +267,9 @@ function AdminLayout() {
             <MenuLateral
               rol={rol}
               ruta={ruta}
+              search={search}
               onNavegar={() => setMenuAbierto(false)}
+              nombre={nombre}
             />
           </div>
         )}

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Megaphone, LayoutGrid, Link2, Type } from 'lucide-react'
 import EditorBanner from '../../components/admin/editores/EditorBanner'
 import EditorDestacados from '../../components/admin/editores/EditorDestacados'
@@ -13,7 +14,21 @@ const pestanas = [
 ]
 
 function Contenido() {
-  const [activa, setActiva] = useState('banner')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const seccionUrl = searchParams.get('seccion') || 'banner'
+  const [activa, setActiva] = useState(
+    pestanas.some((p) => p.id === seccionUrl) ? seccionUrl : 'banner'
+  )
+
+  useEffect(() => {
+    const valida = pestanas.some((p) => p.id === seccionUrl) ? seccionUrl : 'banner'
+    setActiva(valida)
+  }, [seccionUrl])
+
+  function cambiarPestana(id) {
+    setActiva(id)
+    setSearchParams({ seccion: id }, { replace: true })
+  }
 
   return (
     <div className="p-4 sm:p-8">
@@ -28,7 +43,7 @@ function Contenido() {
           return (
             <button
               key={p.id}
-              onClick={() => setActiva(p.id)}
+              onClick={() => cambiarPestana(p.id)}
               className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
                 activa === p.id
                   ? 'bg-gradient-to-r from-indigo-500 to-cyan-400 text-white'
