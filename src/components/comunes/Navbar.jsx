@@ -101,14 +101,14 @@ function Navbar() {
             </NavLink>
             <DropdownNav etiqueta="Sobre nosotros" enlaces={enlacesSobreNosotros} />
             <DropdownNav etiqueta="Proyectos" enlaces={enlacesProyectos} />
-            <a
-              href="#"
-              className="inline-flex items-center rounded-full p-px bg-gradient-to-r from-municipal-verde via-municipal-naranja to-municipal-azul shadow-lg transition-transform hover:scale-105"
+            <span
+              title="Próximamente"
+              className="inline-flex items-center rounded-full p-px bg-gradient-to-r from-municipal-verde via-municipal-naranja to-municipal-azul shadow-lg"
             >
-              <span className="rounded-full bg-municipal-azul px-4 py-1.5 text-xs font-semibold text-municipal-crema">
+              <span className="rounded-full bg-municipal-azul px-4 py-1.5 text-xs font-semibold text-municipal-crema/70">
                 Capacitaciones
               </span>
-            </a>
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -169,9 +169,9 @@ function Navbar() {
                   {enlace.nombre}
                 </Link>
               ))}
-              <a href="#" className="block py-2 text-sm text-municipal-naranja font-semibold">
+              <span className="block py-2 text-sm text-municipal-naranja font-semibold opacity-70">
                 Capacitaciones →
-              </a>
+              </span>
             </div>
             <div
               className="h-px bg-gradient-to-r from-municipal-verde via-municipal-naranja to-municipal-azul"

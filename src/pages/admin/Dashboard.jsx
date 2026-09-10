@@ -24,6 +24,7 @@ function Dashboard() {
         })
         setConteos(resultado)
       })
+      .catch(() => {})
     return () => {
       activo = false
     }

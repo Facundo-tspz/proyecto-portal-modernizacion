@@ -32,7 +32,7 @@ function ModalNuevaContrasena({ usuario, cerrar, onConfirmar }) {
     })
     setEnviando(false)
     if (error) {
-      toast.error(error.message)
+      toast.error('No se pudo reiniciar la contraseña. Intentá de nuevo.')
       return
     }
     toast.success(`Contraseña de ${usuario.nombre} reiniciada`)
@@ -118,7 +118,7 @@ function Preferencias() {
     const { error } = await supabase.rpc('actualizar_mi_nombre', { p_nombre: nombre.trim() })
     setGuardandoNombre(false)
     if (error) {
-      toast.error(error.message)
+      toast.error('No se pudo actualizar el nombre. Intentá de nuevo.')
       return
     }
     toast.success('Nombre actualizado')
@@ -129,7 +129,7 @@ function Preferencias() {
       p_user_id: idUsuario,
     })
     if (error) {
-      toast.error(error.message)
+      toast.error('No se pudieron revocar las sesiones. Intentá de nuevo.')
       return
     }
     toast.success('Sesiones revocadas')
@@ -139,7 +139,7 @@ function Preferencias() {
     const { error } = await supabase.rpc('revocar_sesiones_todos')
     setConfirmarTodo(false)
     if (error) {
-      toast.error(error.message)
+      toast.error('No se pudieron revocar todas las sesiones. Intentá de nuevo.')
       return
     }
     toast.success('Sesiones de todos los usuarios revocadas')

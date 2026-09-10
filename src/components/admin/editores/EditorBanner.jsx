@@ -195,7 +195,6 @@ function EditorBanner() {
         fuente={fuenteCrop}
         aspect={1600 / 400}
         recomendacion="1600 × 400 px"
-        carpeta="public/banner"
         onCerrar={() => {
           setCropAbierto(false)
           setFuenteCrop(null)

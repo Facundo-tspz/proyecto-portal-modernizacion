@@ -92,7 +92,7 @@ function Usuarios() {
     setEnviando(false)
 
     if (error) {
-      toast.error(error.message)
+      toast.error('No se pudo crear el usuario. Revisá los datos e intentá de nuevo.')
       return
     }
     toast.success('Usuario creado')
@@ -107,7 +107,7 @@ function Usuarios() {
       p_rol: rol,
     })
     if (error) {
-      toast.error(error.message)
+      toast.error('No se pudo actualizar el rol. Intentá de nuevo.')
     } else {
       toast.success('Rol actualizado')
       cargarUsuarios()
@@ -120,7 +120,7 @@ function Usuarios() {
       p_activo: activo,
     })
     if (error) {
-      toast.error(error.message)
+      toast.error('No se pudo cambiar el estado del usuario. Intentá de nuevo.')
     } else {
       toast.success(activo ? 'Usuario activado' : 'Usuario desactivado')
       cargarUsuarios()

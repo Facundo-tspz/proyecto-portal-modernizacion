@@ -28,13 +28,7 @@ const grupos = [
     etiqueta: 'Mesa de ayuda',
     icono: Ticket,
     roles: ['admin', 'tecnico'],
-    items: [
-      { nombre: 'Todos los tickets', ruta: '/mg-tinogasta/tickets' },
-      { nombre: 'Pendientes', ruta: '/mg-tinogasta/tickets?f=pendiente' },
-      { nombre: 'En espera', ruta: '/mg-tinogasta/tickets?f=en_espera' },
-      { nombre: 'Resueltas', ruta: '/mg-tinogasta/tickets?f=resuelta' },
-      { nombre: 'Rechazadas', ruta: '/mg-tinogasta/tickets?f=rechazada' },
-    ],
+    items: [{ nombre: 'Todos los tickets', ruta: '/mg-tinogasta/tickets' }],
   },
   {
     id: 'contenido',
@@ -116,7 +110,7 @@ function Breadcrumb({ ruta, search }) {
   )
 }
 
-function MenuLateral({ rol, ruta, search, onNavegar, nombre }) {
+function MenuLateral({ rol, ruta, search, nombre, onNavegar }) {
   const gruposVisibles = grupos.filter((g) => g.roles.includes(rol))
   const rutaCompleta = `${ruta}${search}`
   const [abierto, setAbierto] = useState(() => {
@@ -220,7 +214,7 @@ function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-[#101a2e] text-slate-100">
       <aside className="hidden w-64 shrink-0 border-r border-white/10 lg:block">
-        <MenuLateral rol={rol} ruta={ruta} search={search} onNavegar={() => {}} nombre={nombre} />
+        <MenuLateral rol={rol} ruta={ruta} search={search} nombre={nombre} />
       </aside>
 
       <div className="flex flex-1 flex-col">

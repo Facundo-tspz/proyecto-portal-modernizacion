@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { MapPin, Mail, Phone, ExternalLink } from 'lucide-react'
+import { useConfigSitio } from '../../hooks/useConfigSitio'
 
 const enlacesNavegacion = [
   { nombre: 'Inicio', ruta: '/' },
@@ -7,13 +8,19 @@ const enlacesNavegacion = [
   { nombre: 'Proyectos', ruta: '/proyectos' },
 ]
 
-const datosContacto = [
+const contactoFallback = [
   { icono: MapPin, texto: 'Calle Dr. Antonio Del Pino N° 739, Tinogasta — Catamarca' },
   { icono: Phone, texto: '3834-669002' },
   { icono: Mail, texto: 'info@tinogasta.gob.ar' },
 ]
 
 function Footer() {
+  const config = useConfigSitio()
+  const datosContacto = [
+    { icono: MapPin, texto: config?.q_contacto_ubicacion || contactoFallback[0].texto },
+    { icono: Phone, texto: config?.q_contacto_telefono || contactoFallback[1].texto },
+    { icono: Mail, texto: config?.q_contacto_email || contactoFallback[2].texto },
+  ]
   return (
     <footer className="relative overflow-hidden bg-municipal-azul text-municipal-crema mt-auto">
       <div
@@ -87,15 +94,15 @@ function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
               Capacitaciones
             </h3>
-            <a
-              href="#"
-              className="inline-flex items-center rounded-full p-px bg-gradient-to-r from-municipal-verde to-municipal-naranja transition-transform hover:scale-105"
+            <span
+              title="Próximamente"
+              className="inline-flex items-center rounded-full p-px bg-gradient-to-r from-municipal-verde to-municipal-naranja"
             >
-              <span className="inline-flex items-center gap-2 rounded-full bg-municipal-azul px-4 py-2 text-sm font-semibold text-municipal-naranja">
-                Ir al sitio de capacitaciones
+              <span className="inline-flex items-center gap-2 rounded-full bg-municipal-azul px-4 py-2 text-sm font-semibold text-municipal-naranja/70">
+                Próximamente
                 <ExternalLink size={14} />
               </span>
-            </a>
+            </span>
           </div>
         </div>
       </div>

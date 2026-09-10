@@ -6,6 +6,7 @@ import SomosModernizacion from '../../components/portal/SomosModernizacion'
 function Inicio() {
   return (
     <>
+      <h1 className="sr-only">Dirección de Modernización — Municipalidad de Tinogasta</h1>
       <BannerNoticias />
       <DestacadosCarrusel />
       <TarjetasEnlace />

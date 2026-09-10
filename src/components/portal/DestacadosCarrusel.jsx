@@ -489,7 +489,7 @@ function DestacadosCarrusel() {
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
                   />
                 )}
-                <Icono size={15} className={activa ? 'relative z-10' : 'relative z-10'} />
+                <Icono size={15} className="relative z-10" />
                 <span className="relative z-10">{cat.nombre}</span>
               </button>
             )

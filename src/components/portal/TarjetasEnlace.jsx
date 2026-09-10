@@ -84,12 +84,18 @@ function TarjetasEnlace() {
       <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
         {tarjetasVisibles.map((tarjeta, i) => {
           const Icono = iconos[tarjeta.icono] ?? Link2
+          const esEnlace = Boolean(tarjeta.link)
+          const Componente = esEnlace ? motion.a : motion.div
           return (
-            <motion.a
+            <Componente
               key={tarjeta.id}
-              href={tarjeta.link}
-              target="_blank"
-              rel="noreferrer"
+              {...(esEnlace
+                ? {
+                    href: tarjeta.link,
+                    target: '_blank',
+                    rel: 'noreferrer',
+                  }
+                : {})}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
@@ -102,7 +108,7 @@ function TarjetasEnlace() {
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-municipal-azul to-municipal-verde text-municipal-crema shadow-md">
                       <Icono size={22} />
                     </div>
-                    <ArrowExterno />
+                    {esEnlace && <ArrowExterno />}
                   </div>
                   <h3 className="mt-4 text-lg font-bold text-municipal-azul dark:text-municipal-crema">
                     {tarjeta.titulo}
@@ -112,7 +118,7 @@ function TarjetasEnlace() {
                   </p>
                 </div>
               </div>
-            </motion.a>
+            </Componente>
           )
         })}
       </div>

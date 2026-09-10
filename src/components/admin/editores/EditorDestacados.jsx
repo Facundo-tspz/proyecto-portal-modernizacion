@@ -149,7 +149,6 @@ function TarjetaBorrador({ item, enVivo }) {
           fuente={fuente}
           aspect={16 / 9}
           recomendacion="1280 × 720 px"
-          carpeta="public/destacados"
           onCerrar={() => {
             setCropAbierto(false)
             setFuente(null)
