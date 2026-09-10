@@ -40,6 +40,7 @@ const grupos = [
       { nombre: 'Destacados', ruta: '/mg-tinogasta/contenido?seccion=destacados' },
       { nombre: 'Accesos útiles', ruta: '/mg-tinogasta/contenido?seccion=accesos' },
       { nombre: 'Textos / Quiénes Somos', ruta: '/mg-tinogasta/contenido?seccion=textos' },
+      { nombre: 'Proyectos', ruta: '/mg-tinogasta/contenido?seccion=proyectos' },
     ],
   },
   {
@@ -75,6 +76,7 @@ const nombresSeccion = {
   destacados: 'Destacados',
   accesos: 'Accesos útiles',
   textos: 'Textos / Quiénes Somos',
+  proyectos: 'Proyectos',
 }
 
 const nombresSeccionUsuarios = {

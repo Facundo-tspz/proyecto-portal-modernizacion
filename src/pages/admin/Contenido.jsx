@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Megaphone, LayoutGrid, Link2, Type } from 'lucide-react'
+import { Megaphone, LayoutGrid, Link2, Type, FolderKanban } from 'lucide-react'
 import EditorBanner from '../../components/admin/editores/EditorBanner'
 import EditorDestacados from '../../components/admin/editores/EditorDestacados'
 import EditorAccesos from '../../components/admin/editores/EditorAccesos'
 import EditorTextos from '../../components/admin/editores/EditorTextos'
+import EditorProyectos from '../../components/admin/editores/EditorProyectos'
 
 const pestanas = [
   { id: 'banner', nombre: 'Banner', Icono: Megaphone },
   { id: 'destacados', nombre: 'Destacados', Icono: LayoutGrid },
   { id: 'accesos', nombre: 'Accesos útiles', Icono: Link2 },
   { id: 'textos', nombre: 'Textos', Icono: Type },
+  { id: 'proyectos', nombre: 'Proyectos', Icono: FolderKanban },
 ]
 
 function Contenido() {
@@ -62,6 +64,7 @@ function Contenido() {
         {activa === 'destacados' && <EditorDestacados />}
         {activa === 'accesos' && <EditorAccesos />}
         {activa === 'textos' && <EditorTextos />}
+        {activa === 'proyectos' && <EditorProyectos />}
       </div>
     </div>
   )

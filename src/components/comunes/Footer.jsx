@@ -58,15 +58,15 @@ function Footer() {
             </p>
           </div>
 
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 min-w-0">
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
               Contacto
             </h3>
             <ul className="space-y-3">
               {datosContacto.map(({ icono: Icono, texto }) => (
-                <li key={texto} className="flex items-start gap-3 text-sm text-municipal-crema/80">
+                <li key={texto} className="flex items-start gap-3 text-sm text-municipal-crema/80 min-w-0">
                   <Icono size={16} className="mt-0.5 text-municipal-naranja shrink-0" />
-                  <span>{texto}</span>
+                  <span className="break-all min-w-0">{texto}</span>
                 </li>
               ))}
             </ul>
