@@ -11,7 +11,7 @@ const configFallback = {
 }
 
 function BannerNoticias() {
-  const [config, setConfig] = useState(configFallback)
+  const [config, setConfig] = useState(null)
 
   useEffect(() => {
     let activo = true
@@ -21,13 +21,16 @@ function BannerNoticias() {
       .limit(1)
       .single()
       .then(({ data, error }) => {
-        if (data && !error && activo) {
+        if (!activo) return
+        if (data && !error) {
           setConfig({
             activo: data.activo,
             texto: data.texto || '',
             link: data.link || '',
             imagen: data.imagen_url || '',
           })
+        } else {
+          setConfig(configFallback)
         }
       })
     return () => {
@@ -35,6 +38,7 @@ function BannerNoticias() {
     }
   }, [])
 
+  if (!config) return null
   if (!config.activo) return null
 
   const contenido = (
