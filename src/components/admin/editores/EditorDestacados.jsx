@@ -12,7 +12,7 @@ import {
   EyeOff,
 } from 'lucide-react'
 import { supabase } from '../../../lib/supabase'
-import { subirImagen } from '../../../lib/storage'
+import { subirImagen, borrarImagen } from '../../../lib/storage'
 import CropImageModal from '../CropImageModal'
 
 const categorias = [
@@ -23,21 +23,28 @@ const categorias = [
 
 const MAX_ITEMS = 5
 
-function TarjetaBorrador({ item, enVivo }) {
+function TarjetaBorrador({ item, enImagen }) {
   const [cropAbierto, setCropAbierto] = useState(false)
   const [fuente, setFuente] = useState(null)
   const [archivoRecorte, setArchivoRecorte] = useState(null)
+  const [urlPrevia, setUrlPrevia] = useState('')
 
   useEffect(() => {
-    if (archivoRecorte && enVivo) {
-      enVivo(archivoRecorte)
-        .then(() => {
-          setCropAbierto(false)
-          setFuente(null)
-        })
-        .catch(() => toast.error('No se pudo subir la imagen'))
+    if (!archivoRecorte) {
+      setUrlPrevia('')
+      return
     }
-  }, [archivoRecorte, enVivo])
+    const url = URL.createObjectURL(archivoRecorte)
+    setUrlPrevia(url)
+    return () => URL.revokeObjectURL(url)
+  }, [archivoRecorte])
+
+  function confirmarRecorte(archivo) {
+    setArchivoRecorte(archivo)
+    setCropAbierto(false)
+    setFuente(null)
+    if (enImagen) enImagen(archivo)
+  }
 
   return (
     <div
@@ -88,9 +95,9 @@ function TarjetaBorrador({ item, enVivo }) {
             <div>
               <span className="mb-1 block text-sm font-medium text-slate-300">Imagen</span>
               <div className="flex flex-wrap items-center gap-2">
-                {item.imagen_url ? (
+                {(item.imagen_url || urlPrevia) ? (
                   <img
-                    src={item.imagen_url}
+                    src={urlPrevia || item.imagen_url}
                     alt="Actual"
                     className="h-16 aspect-video rounded-lg object-cover"
                   />
@@ -128,7 +135,7 @@ function TarjetaBorrador({ item, enVivo }) {
               }`}
             >
               <img
-                src={item.imagen_url || 'https://placehold.co/1280x720/1b263b/64748b?text=Sin+imagen'}
+                src={urlPrevia || item.imagen_url || 'https://placehold.co/1280x720/1b263b/64748b?text=Sin+imagen'}
                 alt={item.titulo}
                 className="w-full aspect-video object-cover"
               />
@@ -153,7 +160,7 @@ function TarjetaBorrador({ item, enVivo }) {
             setCropAbierto(false)
             setFuente(null)
           }}
-          onListo={setArchivoRecorte}
+          onListo={confirmarRecorte}
         />
       </div>
     </div>
@@ -169,6 +176,7 @@ function EditorDestacados() {
   const [nuevaAbierta, setNuevaAbierta] = useState(false)
   const [nueva, setNueva] = useState({ titulo: '', leyenda: '', link: '', imagen_url: '' })
   const [guardando, setGuardando] = useState(false)
+  const [pendientes, setPendientes] = useState({})
 
   async function cargarCategoria(cat) {
     const { data, error } = await supabase
@@ -212,18 +220,44 @@ function EditorDestacados() {
     )
   }
 
-  async function guardarUno(it) {
-    const { error } = await supabase
-      .from(catActiva.tabla)
-      .update({ titulo: it.titulo, leyenda: it.leyenda, link: it.link, imagen_url: it.imagen_url, activo: it.activo })
-      .eq('id', it.id)
-    if (error) toast.error('No se pudo guardar la tarjeta. Intentalo de nuevo.')
-    else toast.success('Tarjeta guardada correctamente')
+  function marcarImagen(id, archivo) {
+    setPendientes((p) => ({ ...p, [id]: archivo }))
   }
 
-  async function subirParaItem(id, archivo) {
-    const url = await subirImagen({ archivo, carpeta: `public/destacados/${catActiva.id}` })
-    actualizarItem(id, 'imagen_url', url)
+  async function guardarUno(it) {
+    const pendiente = pendientes[it.id]
+    const imagenAnterior = it.imagen_url
+    let urlFinal = imagenAnterior
+    try {
+      if (pendiente) {
+        urlFinal = await subirImagen({
+          archivo: pendiente,
+          carpeta: `public/destacados/${catActiva.id}`,
+        })
+      }
+    } catch {
+      toast.error('No se pudo subir la imagen. Intentalo de nuevo.')
+      return
+    }
+    const { error } = await supabase
+      .from(catActiva.tabla)
+      .update({ titulo: it.titulo, leyenda: it.leyenda, link: it.link, imagen_url: urlFinal, activo: it.activo })
+      .eq('id', it.id)
+    if (error) {
+      if (pendiente && urlFinal) await borrarImagen(urlFinal)
+      toast.error('No se pudo guardar la tarjeta. Intentalo de nuevo.')
+      return
+    }
+    setPendientes((p) => {
+      const resto = { ...p }
+      delete resto[it.id]
+      return resto
+    })
+    if (urlFinal !== imagenAnterior) {
+      actualizarItem(it.id, 'imagen_url', urlFinal)
+      await borrarImagen(imagenAnterior)
+    }
+    toast.success('Tarjeta guardada correctamente')
   }
 
   async function crearNueva(e) {
@@ -248,10 +282,14 @@ function EditorDestacados() {
   }
 
   async function eliminar(id) {
+    const item = items.find((x) => x.id === id)
     const { error } = await supabase.from(catActiva.tabla).delete().eq('id', id)
     if (error) {
       toast.error('No se pudo eliminar la tarjeta. Intentalo de nuevo.')
     } else {
+      if (item?.imagen_url) {
+        await borrarImagen(item.imagen_url)
+      }
       toast.success('Tarjeta eliminada correctamente')
       cargarCategoria(catActiva)
     }
@@ -390,7 +428,7 @@ function EditorDestacados() {
               </div>
               <TarjetaBorrador
                 item={{ ...it, onCambio: (c, v) => actualizarItem(it.id, c, v) }}
-                enVivo={(a) => subirParaItem(it.id, a)}
+                enImagen={(a) => marcarImagen(it.id, a)}
               />
             </div>
           ))}

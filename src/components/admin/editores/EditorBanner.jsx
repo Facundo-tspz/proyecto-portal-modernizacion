@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Save, ImagePlus, RefreshCw } from 'lucide-react'
 import { supabase } from '../../../lib/supabase'
-import { subirImagen } from '../../../lib/storage'
+import { subirImagen, borrarImagen } from '../../../lib/storage'
 import CropImageModal from '../CropImageModal'
 
 function EditorBanner() {
@@ -11,6 +11,8 @@ function EditorBanner() {
   const [cropAbierto, setCropAbierto] = useState(false)
   const [archivoRecorte, setArchivoRecorte] = useState(null)
   const [fuenteCrop, setFuenteCrop] = useState(null)
+  const [urlPrevia, setUrlPrevia] = useState('')
+  const imagenOriginalRef = useRef('')
 
   useEffect(() => {
     let activo = true
@@ -21,6 +23,7 @@ function EditorBanner() {
       .single()
       .then(({ data }) => {
         if (data && activo) {
+          imagenOriginalRef.current = data.imagen_url || ''
           setForm({
             id: data.id,
             activo: data.activo,
@@ -42,51 +45,73 @@ function EditorBanner() {
     setCropAbierto(true)
   }
 
+  function confirmarRecorte(archivo) {
+    setArchivoRecorte(archivo)
+    setCropAbierto(false)
+    setFuenteCrop(null)
+  }
+
   useEffect(() => {
-    if (archivoRecorte) {
-      subirImagen({ archivo: archivoRecorte, carpeta: 'public/banner' })
-        .then((url) => {
-          setForm((f) => ({ ...f, imagen_url: url }))
-          toast.success('Imagen subida')
-        })
-        .catch(() => toast.error('No se pudo subir la imagen. Revisá que el bucket esté creado.'))
-        .finally(() => {
-          setArchivoRecorte(null)
-          setCropAbierto(false)
-        })
+    if (!archivoRecorte) {
+      setUrlPrevia('')
+      return
     }
+    const url = URL.createObjectURL(archivoRecorte)
+    setUrlPrevia(url)
+    return () => URL.revokeObjectURL(url)
   }, [archivoRecorte])
 
   async function guardar(e) {
     e.preventDefault()
     setGuardando(true)
-    const fila = {
-      activo: form.activo,
-      texto: form.texto,
-      link: form.link,
-      imagen_url: form.imagen_url,
-    }
-    const { error } = form.id
-      ? await supabase
-          .from('avisos')
-          .update(fila)
-          .eq('id', form.id)
-      : await supabase.from('avisos').insert(fila)
-    setGuardando(false)
-    if (error) {
-      toast.error('No se pudo guardar el banner. Intentalo de nuevo.')
-    } else {
+    let imagenSubida = null
+    try {
+      let urlFinal = form.imagen_url
+      if (archivoRecorte) {
+        urlFinal = await subirImagen({ archivo: archivoRecorte, carpeta: 'public/banner' })
+        imagenSubida = urlFinal
+      }
+      const fila = {
+        activo: form.activo,
+        texto: form.texto,
+        link: form.link,
+        imagen_url: urlFinal,
+      }
+      const imagenAnterior = imagenOriginalRef.current
+      const { error } = form.id
+        ? await supabase
+            .from('avisos')
+            .update(fila)
+            .eq('id', form.id)
+        : await supabase.from('avisos').insert(fila)
+      if (error) {
+        if (imagenSubida) await borrarImagen(imagenSubida)
+        toast.error('No se pudo guardar el banner. Intentalo de nuevo.')
+        return
+      }
+      imagenOriginalRef.current = urlFinal
+      setForm((f) => ({ ...f, ...fila }))
+      if (imagenAnterior && imagenAnterior !== urlFinal) {
+        await borrarImagen(imagenAnterior)
+      }
       toast.success('Modificación de banner exitosa')
+    } catch {
+      if (imagenSubida) await borrarImagen(imagenSubida)
+      toast.error('No se pudo guardar el banner. Intentalo de nuevo.')
+    } finally {
+      setGuardando(false)
+      setArchivoRecorte(null)
     }
   }
 
+  const imagenPreview = urlPrevia || form.imagen_url
   const vistaPrevia = (
     <div className="relative overflow-hidden rounded-xl border border-white/10">
-      {form.imagen_url ? (
+      {imagenPreview ? (
         <>
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${form.imagen_url})` }}
+            style={{ backgroundImage: `url(${imagenPreview})` }}
           />
           <div className="absolute inset-0 bg-[#0b1220]/60" />
         </>
@@ -199,7 +224,7 @@ function EditorBanner() {
           setCropAbierto(false)
           setFuenteCrop(null)
         }}
-        onListo={setArchivoRecorte}
+        onListo={confirmarRecorte}
       />
     </form>
   )
