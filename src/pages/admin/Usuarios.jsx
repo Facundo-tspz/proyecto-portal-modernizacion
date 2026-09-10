@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { UserPlus, RefreshCw, ShieldCheck, ArrowLeft, Wifi, Eye, EyeOff } from 'lucide-react'
+import { UserPlus, RefreshCw, ShieldCheck, ArrowLeft, Wifi, Eye, EyeOff, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -158,6 +158,25 @@ function Usuarios() {
       toast.error('No se pudo cambiar el estado del usuario. Intentá de nuevo.')
     } else {
       toast.success(activo ? 'Usuario activado' : 'Usuario desactivado')
+      cargarUsuarios()
+    }
+  }
+
+  async function eliminarUsuario(id, email) {
+    const { error } = await supabase.rpc('eliminar_usuario', {
+      p_user_id: id,
+    })
+    if (error) {
+      console.error('eliminar_usuario:', error)
+      if (String(error?.message || '').includes('No autorizado')) {
+        toast.error('No tenés permisos de administrador para esta acción.')
+      } else if (String(error?.message || '').includes('propia cuenta')) {
+        toast.error('No podés eliminar tu propia cuenta.')
+      } else {
+        toast.error('No se pudo eliminar el usuario. Intentá de nuevo.')
+      }
+    } else {
+      toast.success(`Se eliminó la cuenta de ${email}`)
       cargarUsuarios()
     }
   }
@@ -376,6 +395,7 @@ function Usuarios() {
                         Vos
                       </span>
                     ) : (
+                      <>
                       <button
                         onClick={() =>
                           setConfirmarAccion({
@@ -388,6 +408,20 @@ function Usuarios() {
                       >
                         {usuario.activo ? 'Desactivar' : 'Activar'}
                       </button>
+                      <button
+                        onClick={() =>
+                          setConfirmarAccion({
+                            titulo: 'Eliminar usuario',
+                            mensaje: `¿Eliminar definitivamente a ${usuario.nombre} (${usuario.email})? Se borrará su cuenta y todos sus datos. Esta acción no se puede deshacer.`,
+                            ejecutar: () => eliminarUsuario(usuario.id, usuario.email),
+                          })
+                        }
+                        className="rounded-lg px-2 py-1 text-xs font-semibold text-rose-400 transition-colors hover:bg-rose-500/10"
+                      >
+                        <Trash2 size={14} className="mr-1 inline" />
+                        Eliminar
+                      </button>
+                      </>
                     )}
                   </td>
                 </tr>
