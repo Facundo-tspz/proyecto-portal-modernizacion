@@ -53,8 +53,13 @@ function CropImageModal({ abierto, fuente, aspect, recomendacion, onCerrar, onLi
   const [subiendo, setSubiendo] = useState(false)
   const [error, setError] = useState('')
   const imageRef = useRef(null)
+  const objectUrlRef = useRef(null)
 
   useEffect(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current)
+      objectUrlRef.current = null
+    }
     if (abierto && fuente) {
       const img = new Image()
       img.onload = () => {
@@ -62,9 +67,9 @@ function CropImageModal({ abierto, fuente, aspect, recomendacion, onCerrar, onLi
         setRecorte(centrarAutom(aspect, img.width, img.height))
         setError('')
       }
-      img.src = URL.createObjectURL instanceof Function && fuente instanceof Blob
-        ? URL.createObjectURL(fuente)
-        : fuente
+      const esBlob = URL.createObjectURL instanceof Function && fuente instanceof Blob
+      objectUrlRef.current = esBlob ? URL.createObjectURL(fuente) : null
+      img.src = esBlob ? objectUrlRef.current : fuente
     }
   }, [abierto, fuente, aspect])
 

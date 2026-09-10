@@ -8,12 +8,14 @@ const DIAS_MAX_INACTIVIDAD = 7
 const MS_INACTIVIDAD = DIAS_MAX_INACTIVIDAD * 24 * 60 * 60 * 1000
 const LATIDO_MS = 60 * 1000
 const REGISTRO_EVENTOS_MS = 60 * 1000
+const ROLES_VALIDOS = ['admin', 'tecnico', 'editor']
 
 export function AuthProvider({ children }) {
   const [sesion, setSesion] = useState(null)
   const [usuario, setUsuario] = useState(null)
   const [cargando, setCargando] = useState(true)
   const sesionRef = useRef(null)
+  const usuarioRef = useRef(false)
 
   useEffect(() => {
     async function inicializar() {
@@ -21,6 +23,7 @@ export function AuthProvider({ children }) {
 
       if (data.session) {
         sesionRef.current = true
+        usuarioRef.current = false
         const ultimaActividad = Number(localStorage.getItem(CLAVE_ACTIVIDAD) || 0)
         const inactivo = ultimaActividad > 0 && Date.now() - ultimaActividad > MS_INACTIVIDAD
 
@@ -48,9 +51,14 @@ export function AuthProvider({ children }) {
         sesionRef.current = true
         marcarActividad()
         setSesion(sesionActual)
-        cargarPerfil(sesionActual.user)
+        if (_evento === 'SIGNED_IN') return
+        if (!usuarioRef.current) {
+          setCargando(true)
+          cargarPerfil(sesionActual.user)
+        }
       } else {
         sesionRef.current = false
+        usuarioRef.current = false
         setSesion(null)
         setUsuario(null)
         setCargando(false)
@@ -71,7 +79,7 @@ export function AuthProvider({ children }) {
     intervaloLatido = setInterval(() => {
       marcarActividad()
       if (sesionRef.current) {
-        supabase.rpc('registrar_ultimo_acceso')
+        supabase.rpc('registrar_ultimo_acceso').then(() => {})
       }
     }, LATIDO_MS)
 
@@ -87,22 +95,55 @@ export function AuthProvider({ children }) {
     localStorage.setItem(CLAVE_ACTIVIDAD, String(Date.now()))
   }
 
-  async function cargarPerfil(user) {
-    const { data } = await supabase
-      .from('perfiles')
-      .select('nombre, rol, activo')
-      .eq('id', user.id)
-      .single()
+  async function cargarPerfil(user, { desloguearSiInvalido = true } = {}) {
+    let perfil = null
+    try {
+      const { data, error } = await supabase
+        .from('perfiles')
+        .select('nombre, rol, activo')
+        .eq('id', user.id)
+        .maybeSingle()
+      if (error) {
+        if (error.code === 'PGRST116') {
+          perfil = null
+        } else {
+          return null
+        }
+      } else {
+        perfil = data
+      }
+    } catch {
+      return null
+    }
 
+    if (!perfil || perfil.activo !== true || !ROLES_VALIDOS.includes(perfil.rol)) {
+      if (!desloguearSiInvalido) return null
+      sesionRef.current = false
+      await supabase.auth.signOut()
+      setSesion(null)
+      setUsuario(null)
+      setCargando(false)
+      return null
+    }
+
+    usuarioRef.current = true
     setSesion({ user })
-    setUsuario({ ...user, perfil: data })
+    setUsuario({ ...user, perfil })
     setCargando(false)
+    return perfil
   }
 
   async function iniciarSesion(email, password) {
     const resultado = await supabase.auth.signInWithPassword({ email, password })
-    if (!resultado.error) {
-      marcarActividad()
+    if (resultado.error) {
+      return resultado
+    }
+    marcarActividad()
+    const perfil = await cargarPerfil(resultado.data.user)
+    if (!perfil) {
+      const err = new Error('Tu cuenta no está habilitada para acceder al panel.')
+      err.cuentaInhabilitada = true
+      return { error: err }
     }
     return resultado
   }

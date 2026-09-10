@@ -39,6 +39,7 @@ const secciones = [
 
 function EditorTextos() {
   const [todos, setTodos] = useState({})
+  const [editadas, setEditadas] = useState({})
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
 
@@ -63,12 +64,20 @@ function EditorTextos() {
   }, [])
 
   async function guardar() {
+    const aGuardar = Object.keys(editadas)
+    if (aGuardar.length === 0) {
+      toast.info('No hay cambios para guardar.')
+      return
+    }
     setGuardando(true)
-    const filas = Object.entries(todos).map(([clave, valor]) => ({ clave, valor }))
+    const filas = aGuardar.map((clave) => ({ clave, valor: todos[clave] }))
     const { error } = await supabase.from('config_sitio').upsert(filas, { onConflict: 'clave' })
     setGuardando(false)
     if (error) toast.error('No se pudieron guardar los textos. Intentalo de nuevo.')
-    else toast.success('Textos guardados correctamente')
+    else {
+      setEditadas({})
+      toast.success('Textos guardados correctamente')
+    }
   }
 
   if (cargando) return <p className="text-sm text-slate-400">Cargando…</p>
@@ -94,7 +103,10 @@ function EditorTextos() {
                       {tipo === 'area' ? (
                         <textarea
                           value={todos[clave] || ''}
-                          onChange={(e) => setTodos({ ...todos, [clave]: e.target.value })}
+                          onChange={(e) => {
+                            setTodos({ ...todos, [clave]: e.target.value })
+                            setEditadas((prev) => ({ ...prev, [clave]: true }))
+                          }}
                           rows={3}
                           className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
                         />
@@ -102,7 +114,10 @@ function EditorTextos() {
                         <input
                           type="text"
                           value={todos[clave] || ''}
-                          onChange={(e) => setTodos({ ...todos, [clave]: e.target.value })}
+                          onChange={(e) => {
+                            setTodos({ ...todos, [clave]: e.target.value })
+                            setEditadas((prev) => ({ ...prev, [clave]: true }))
+                          }}
                           className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
                         />
                       )}

@@ -95,13 +95,16 @@ function Preferencias() {
 
   async function cargarUsuarios() {
     setCargando(true)
-    const { data, error } = await supabase.rpc('listar_usuarios')
-    if (error) {
-      toast.error('No se pudieron cargar los usuarios')
-    } else {
-      setUsuarios(data || [])
+    try {
+      const { data, error } = await supabase.rpc('listar_usuarios')
+      if (error) {
+        toast.error('No se pudieron cargar los usuarios')
+      } else {
+        setUsuarios(data || [])
+      }
+    } finally {
+      setCargando(false)
     }
-    setCargando(false)
   }
 
   useEffect(() => {

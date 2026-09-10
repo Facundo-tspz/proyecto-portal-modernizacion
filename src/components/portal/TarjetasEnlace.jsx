@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FileText, CalendarDays, Newspaper, Globe, Link2, Share2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
+import { normalizarEnlace } from '../../lib/url'
 
 const tarjetasFallback = [
   {
@@ -91,7 +92,7 @@ function TarjetasEnlace() {
               key={tarjeta.id}
               {...(esEnlace
                 ? {
-                    href: tarjeta.link,
+                    href: normalizarEnlace(tarjeta.link),
                     target: '_blank',
                     rel: 'noreferrer',
                   }

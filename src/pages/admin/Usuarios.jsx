@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { UserPlus, RefreshCw, ShieldCheck, ArrowLeft, Wifi } from 'lucide-react'
+import { UserPlus, RefreshCw, ShieldCheck, ArrowLeft, Wifi, Eye, EyeOff } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 
 const roles = ['admin', 'tecnico', 'editor']
 const MINUTOS_EN_LINEA = 5
@@ -22,6 +23,22 @@ function formatoTiempoRelativo(fecha) {
     month: '2-digit',
     year: 'numeric',
   })
+}
+
+function mensajeErrorCrearUsuario(error) {
+  const mensaje = String(error?.message || '')
+  if (mensaje.includes('No autorizado')) return 'No tenés permisos de administrador para esta acción.'
+  if (mensaje.includes('already exists') || mensaje.includes('duplicate key')) {
+    return 'Ya existe un usuario con ese correo.'
+  }
+  if (mensaje.includes('La contraseña debe tener al menos 8 caracteres')) {
+    return 'La contraseña debe tener al menos 8 caracteres.'
+  }
+  if (mensaje.includes('El email no es válido')) return 'El email no es válido.'
+  if (mensaje.includes('PGRST') || mensaje.includes('relation') || mensaje.includes('not found')) {
+    return 'Ocurrió un error del servidor. Reintentá en unos segundos.'
+  }
+  return 'No se pudo crear el usuario. Revisá los datos e intentá de nuevo.'
 }
 
 function ModalConfirmacion({ abierto, titulo, mensaje, confirmar, cancelar }) {
@@ -53,23 +70,29 @@ function ModalConfirmacion({ abierto, titulo, mensaje, confirmar, cancelar }) {
 }
 
 function Usuarios() {
+  const { usuario: usuarioActual } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const seccion = searchParams.get('seccion') || 'lista'
   const [usuarios, setUsuarios] = useState([])
   const [cargando, setCargando] = useState(true)
   const [nuevo, setNuevo] = useState({ email: '', nombre: '', password: '', rol: 'editor' })
+  const [verPassword, setVerPassword] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [confirmarAccion, setConfirmarAccion] = useState(null)
 
   async function cargarUsuarios() {
     setCargando(true)
-    const { data, error } = await supabase.rpc('listar_usuarios')
-    if (error) {
-      toast.error('No se pudieron cargar los usuarios')
-    } else {
-      setUsuarios(data || [])
+    try {
+      const { data, error } = await supabase.rpc('listar_usuarios')
+      if (error) {
+        console.error('listar_usuarios:', error)
+        toast.error('No se pudieron cargar los usuarios')
+      } else {
+        setUsuarios(data || [])
+      }
+    } finally {
+      setCargando(false)
     }
-    setCargando(false)
   }
 
   useEffect(() => {
@@ -82,23 +105,34 @@ function Usuarios() {
       toast.error('Email y contraseña son obligatorios')
       return
     }
-    setEnviando(true)
-    const { error } = await supabase.rpc('crear_usuario_admin', {
-      p_email: nuevo.email,
-      p_password: nuevo.password,
-      p_nombre: nuevo.nombre || 'Sin nombre',
-      p_rol: nuevo.rol,
-    })
-    setEnviando(false)
-
-    if (error) {
-      toast.error('No se pudo crear el usuario. Revisá los datos e intentá de nuevo.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevo.email)) {
+      toast.error('El email no tiene un formato válido')
       return
     }
-    toast.success('Usuario creado')
-    setNuevo({ email: '', nombre: '', password: '', rol: 'editor' })
-    setSearchParams({ seccion: 'lista' })
-    cargarUsuarios()
+    if (nuevo.password.length < 8) {
+      toast.error('La contraseña debe tener al menos 8 caracteres')
+      return
+    }
+    setEnviando(true)
+    try {
+      const { error } = await supabase.rpc('crear_usuario_admin', {
+        p_email: nuevo.email,
+        p_password: nuevo.password,
+        p_nombre: nuevo.nombre || 'Sin nombre',
+        p_rol: nuevo.rol,
+      })
+      if (error) {
+        console.error('crear_usuario_admin:', error)
+        toast.error(mensajeErrorCrearUsuario(error))
+        return
+      }
+      toast.success('Usuario creado')
+      setNuevo({ email: '', nombre: '', password: '', rol: 'editor' })
+      setSearchParams({ seccion: 'lista' })
+      cargarUsuarios()
+    } finally {
+      setEnviando(false)
+    }
   }
 
   async function cambiarRol(id, rol) {
@@ -120,6 +154,7 @@ function Usuarios() {
       p_activo: activo,
     })
     if (error) {
+      console.error('toggle_usuario_activo:', error)
       toast.error('No se pudo cambiar el estado del usuario. Intentá de nuevo.')
     } else {
       toast.success(activo ? 'Usuario activado' : 'Usuario desactivado')
@@ -200,15 +235,27 @@ function Usuarios() {
             </label>
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-slate-300">Contraseña *</span>
-              <input
-                type="password"
-                value={nuevo.password}
-                onChange={(e) => setNuevo({ ...nuevo, password: e.target.value })}
-                required
-                minLength={8}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                placeholder="Mínimo 8 caracteres"
-              />
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 focus-within:border-cyan-400">
+                <input
+                  type={verPassword ? 'text' : 'password'}
+                  value={nuevo.password}
+                  onChange={(e) => setNuevo({ ...nuevo, password: e.target.value })}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  className="w-full bg-transparent py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <button
+                  type="button"
+                  onClick={() => setVerPassword((v) => !v)}
+                  className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:text-slate-200"
+                  aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  title={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {verPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </label>
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-slate-300">Rol</span>
@@ -276,7 +323,8 @@ function Usuarios() {
                     <select
                       value={usuario.rol}
                       onChange={(e) => cambiarRol(usuario.id, e.target.value)}
-                      className="rounded-lg border border-white/10 bg-[#101a2e] px-2 py-1 text-xs capitalize text-slate-200"
+                      disabled={usuarioActual?.id === usuario.id}
+                      className="rounded-lg border border-white/10 bg-[#101a2e] px-2 py-1 text-xs capitalize text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {roles.map((r) => (
                         <option key={r} value={r}>
@@ -323,18 +371,24 @@ function Usuarios() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() =>
-                        setConfirmarAccion({
-                          titulo: usuario.activo ? 'Desactivar usuario' : 'Activar usuario',
-                          mensaje: `¿Confirmás ${usuario.activo ? 'desactivar' : 'activar'} a ${usuario.nombre}?`,
-                          ejecutar: () => toggleActivo(usuario.id, !usuario.activo),
-                        })
-                      }
-                      className="rounded-lg px-2 py-1 text-xs font-semibold text-cyan-300 transition-colors hover:bg-white/5"
-                    >
-                      {usuario.activo ? 'Desactivar' : 'Activar'}
-                    </button>
+                    {usuarioActual?.id === usuario.id ? (
+                      <span className="rounded-lg px-2 py-1 text-xs font-semibold text-slate-500">
+                        Vos
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          setConfirmarAccion({
+                            titulo: usuario.activo ? 'Desactivar usuario' : 'Activar usuario',
+                            mensaje: `¿Confirmás ${usuario.activo ? 'desactivar' : 'activar'} a ${usuario.nombre}?`,
+                            ejecutar: () => toggleActivo(usuario.id, !usuario.activo),
+                          })
+                        }
+                        className="rounded-lg px-2 py-1 text-xs font-semibold text-cyan-300 transition-colors hover:bg-white/5"
+                      >
+                        {usuario.activo ? 'Desactivar' : 'Activar'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -1,8 +1,10 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
+const ROLES_ADMIN = ['admin', 'tecnico', 'editor']
+
 function RutaProtegida({ children }) {
-  const { sesion, cargando } = useAuth()
+  const { sesion, usuario, cargando } = useAuth()
 
   if (cargando) {
     return (
@@ -12,7 +14,8 @@ function RutaProtegida({ children }) {
     )
   }
 
-  if (!sesion) {
+  const rol = usuario?.perfil?.rol
+  if (!sesion || !ROLES_ADMIN.includes(rol) || usuario?.perfil?.activo === false) {
     return <Navigate to="/mg-tinogasta/acceso" replace />
   }
 

@@ -19,6 +19,7 @@ function EditorBanner() {
     supabase
       .from('avisos')
       .select('id, activo, texto, link, imagen_url')
+      .order('created_at', { ascending: true })
       .limit(1)
       .single()
       .then(({ data }) => {
@@ -78,19 +79,26 @@ function EditorBanner() {
         imagen_url: urlFinal,
       }
       const imagenAnterior = imagenOriginalRef.current
-      const { error } = form.id
-        ? await supabase
-            .from('avisos')
-            .update(fila)
-            .eq('id', form.id)
-        : await supabase.from('avisos').insert(fila)
+      let idFinal = form.id
+      let error
+      if (form.id) {
+        ;({ error } = await supabase.from('avisos').update(fila).eq('id', form.id))
+      } else {
+        const insertado = await supabase
+          .from('avisos')
+          .insert(fila)
+          .select('id')
+          .single()
+        ;({ error } = insertado)
+        if (insertado.data) idFinal = insertado.data.id
+      }
       if (error) {
         if (imagenSubida) await borrarImagen(imagenSubida)
         toast.error('No se pudo guardar el banner. Intentalo de nuevo.')
         return
       }
       imagenOriginalRef.current = urlFinal
-      setForm((f) => ({ ...f, ...fila }))
+      setForm((f) => ({ ...f, ...fila, id: idFinal }))
       if (imagenAnterior && imagenAnterior !== urlFinal) {
         await borrarImagen(imagenAnterior)
       }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Megaphone } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
+import { normalizarEnlace } from '../../lib/url'
 
 const configFallback = {
   activo: true,
@@ -18,6 +19,7 @@ function BannerNoticias() {
     supabase
       .from('avisos')
       .select('activo, texto, link, imagen_url')
+      .order('created_at', { ascending: true })
       .limit(1)
       .single()
       .then(({ data, error }) => {
@@ -92,7 +94,7 @@ function BannerNoticias() {
     >
       {config.link ? (
         <a
-          href={config.link}
+          href={normalizarEnlace(config.link)}
           className={`${contenedor} block hover:opacity-95 transition-opacity cursor-pointer`}
         >
           {contenidoConFondo}

@@ -18,7 +18,7 @@ create or replace function public.crear_usuario_admin(
 returns uuid
 language plpgsql
 security definer
-set search_path = public, auth
+set search_path = public, auth, extensions
 as $$
 declare
   user_id uuid;
@@ -26,6 +26,14 @@ begin
   -- Solo un admin autenticado puede crear usuarios
   if not public.es_admin() then
     raise exception 'No autorizado';
+  end if;
+
+  if length(coalesce(p_password, '')) < 8 then
+    raise exception 'La contraseña debe tener al menos 8 caracteres';
+  end if;
+
+  if p_email is null or position('@' in p_email) = 0 then
+    raise exception 'El email no es válido';
   end if;
 
   user_id := gen_random_uuid();
@@ -82,11 +90,15 @@ create or replace function public.cambiar_rol_usuario(p_user_id uuid, p_rol rol_
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, auth
 as $$
 begin
   if not public.es_admin() then
     raise exception 'No autorizado';
+  end if;
+
+  if p_user_id = auth.uid() then
+    raise exception 'No podés cambiar el rol de tu propia cuenta';
   end if;
 
   update public.perfiles set rol = p_rol where id = p_user_id;
@@ -96,19 +108,30 @@ $$;
 revoke all on function public.cambiar_rol_usuario(uuid, rol_usuario) from public;
 grant execute on function public.cambiar_rol_usuario(uuid, rol_usuario) to authenticated;
 
--- Función: activar/desactivar usuario (solo admin)
+-- Función: activar/desactivar usuario (solo admin).
+-- Al desactivar, además se cierran las sesiones activas de Auth
+-- para que la cuenta no siga operando desde una sesión ya emitida.
 create or replace function public.toggle_usuario_activo(p_user_id uuid, p_activo boolean)
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, auth
 as $$
 begin
   if not public.es_admin() then
     raise exception 'No autorizado';
   end if;
 
+  if p_user_id = auth.uid() then
+    raise exception 'No podés desactivar tu propia cuenta';
+  end if;
+
   update public.perfiles set activo = p_activo where id = p_user_id;
+
+  if not p_activo then
+    delete from auth.refresh_tokens where user_id::text = p_user_id::text;
+    delete from auth.sessions where user_id::text = p_user_id::text;
+  end if;
 end;
 $$;
 

@@ -215,9 +215,14 @@ function EditorDestacados() {
   }
 
   async function guardarOrden(lista) {
-    await Promise.all(
+    const resultados = await Promise.all(
       lista.map((it) => supabase.from(catActiva.tabla).update({ orden: it.orden }).eq('id', it.id))
     )
+    const fallo = resultados.find((r) => r.error)
+    if (fallo) {
+      toast.error('No se pudo guardar el orden. Intentalo de nuevo.')
+      cargarCategoria(categoriaActiva)
+    }
   }
 
   function marcarImagen(id, archivo) {

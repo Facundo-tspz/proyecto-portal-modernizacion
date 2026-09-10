@@ -26,6 +26,11 @@ function Login() {
     const { error } = await iniciarSesion(email, password)
 
     if (error) {
+      if (error.cuentaInhabilitada) {
+        setEnviando(false)
+        toast.error(error.message)
+        return
+      }
       const cuenta = Number(localStorage.getItem(CLAVE_INTENTOS) || 0) + 1
       localStorage.setItem(CLAVE_INTENTOS, String(cuenta))
       if (cuenta >= MAX_INTENTOS) {

@@ -292,7 +292,11 @@ alter table public.tickets enable row level security;
 drop policy if exists "tickets_insert_publico" on public.tickets;
 create policy "tickets_insert_publico"
   on public.tickets for insert
-  with check (true);
+  with check (
+    estado = 'pendiente'
+    and gravedad in ('baja', 'media', 'alta', 'critica')
+    and codigo_seguimiento <> ''
+  );
 
 drop policy if exists "tickets_select_admin" on public.tickets;
 create policy "tickets_select_admin"

@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { normalizarEnlace } from '../../lib/url'
 
 const categoriasBase = [
   {
@@ -122,7 +123,7 @@ const iconosCategoria = {
   noticias: Newspaper,
 }
 
-const DURACION_ROTACION = 6
+const DURACION_ROTACION = 10
 
 function CarruselSkeleton() {
   return (
@@ -210,7 +211,7 @@ function TarjetaPrincipal({ item, categoria, indice, manualmente }) {
           </p>
           {item.link && (
             <a
-              href={item.link}
+              href={normalizarEnlace(item.link)}
               target="_blank"
               rel="noreferrer"
               className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-municipal-azul to-municipal-verde px-4 py-2 text-sm font-semibold text-municipal-crema shadow-lg transition-transform hover:scale-105"

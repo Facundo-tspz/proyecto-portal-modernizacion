@@ -47,16 +47,23 @@ function EditorAccesos() {
     setItems((arr) => arr.map((it) => (it.id === id ? { ...it, [campo]: valor } : it)))
   }
 
-  function mover(indice, delta) {
+  async function mover(indice, delta) {
+    const original = [...items]
     const nuevoArr = [...items]
     const destino = indice + delta
     if (destino < 0 || destino >= nuevoArr.length) return
     ;[nuevoArr[indice], nuevoArr[destino]] = [nuevoArr[destino], nuevoArr[indice]]
     nuevoArr.forEach((it, i) => (it.orden = i + 1))
     setItems(nuevoArr)
-    nuevoArr.forEach((it) =>
+    const actualizaciones = nuevoArr.map((it) =>
       supabase.from('tarjetas_enlace').update({ orden: it.orden }).eq('id', it.id)
     )
+    const resultados = await Promise.all(actualizaciones)
+    const fallo = resultados.find((r) => r.error)
+    if (fallo) {
+      setItems(original)
+      toast.error('No se pudo reordenar. Intentalo de nuevo.')
+    }
   }
 
   async function guardarUno(it) {
