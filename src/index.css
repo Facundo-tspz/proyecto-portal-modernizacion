@@ -52,3 +52,14 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

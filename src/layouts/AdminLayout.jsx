@@ -215,12 +215,12 @@ function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-[#101a2e] text-slate-100">
-      <aside className="hidden w-64 shrink-0 border-r border-white/10 lg:block">
+      <aside className="hidden w-64 shrink-0 border-r border-white/10 lg:block print:hidden">
         <MenuLateral rol={rol} ruta={ruta} search={search} nombre={nombre} />
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-[#101a2e]/90 px-4 py-3 backdrop-blur-xl">
+        <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-[#101a2e]/90 px-4 py-3 backdrop-blur-xl print:hidden">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMenuAbierto((v) => !v)}

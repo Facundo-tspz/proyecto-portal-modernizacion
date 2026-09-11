@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
+  BookOpen,
   FileText,
   Search,
   ClipboardCopy,
   Download,
+  FileDown,
   Home,
   CheckCircle2,
   Loader2,
@@ -13,6 +15,9 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '../../lib/supabase'
+import capturaReporteForm from '../../assets/manual/reporte-form.jpg'
+import capturaReporteCodigo from '../../assets/manual/reporte-codigo.jpg'
+import capturaReporteSeguimiento from '../../assets/manual/reporte-seguimiento.jpg'
 
 const categorias = ['Conectividad', 'Equipos', 'Software', 'Otro']
 
@@ -61,12 +66,37 @@ function formatFecha(iso) {
   })
 }
 
+function PasoManual({ n, children }) {
+  return (
+    <div className="flex gap-3">
+      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-municipal-azul to-municipal-verde text-sm font-bold text-municipal-crema">
+        {n}
+      </span>
+      <div className="text-sm leading-relaxed text-municipal-azul/80 dark:text-municipal-crema/80">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function FiguraManual({ src, alt, leyenda }) {
+  return (
+    <figure className="overflow-hidden rounded-2xl border border-municipal-azul/10 bg-white/60 dark:border-municipal-crema/10 dark:bg-white/5">
+      <img src={src} alt={alt} className="w-full" />
+      <figcaption className="border-t border-municipal-azul/10 px-3 py-1.5 text-xs font-medium text-municipal-azul/60 dark:border-municipal-crema/10 dark:text-municipal-crema/60">
+        Figura: {leyenda}
+      </figcaption>
+    </figure>
+  )
+}
+
 const ejemploDescripcion =
   'Contanos qué pasó, desde cuándo, qué intentaste resolver…'
 
 const pestañas = [
   { id: 'reportar', nombre: 'Realizar reporte', icono: FileText },
   { id: 'seguimiento', nombre: 'Hacer seguimiento', icono: Search },
+  { id: 'manual', nombre: 'Manual', icono: BookOpen },
 ]
 
 function Reportar() {
@@ -248,7 +278,7 @@ function Reportar() {
         <div className="absolute top-1/4 -right-16 h-72 w-72 rounded-full bg-municipal-naranja/20 blur-3xl dark:bg-municipal-naranja/25" />
       </div>
 
-      <div className="mb-6 flex justify-center">
+      <div className="mb-6 flex justify-center print:hidden">
         <div className="inline-flex rounded-xl bg-white/50 p-1 shadow-sm backdrop-blur-sm dark:bg-white/5">
           {pestañas.map((btn) => {
             const activa = pestaña === btn.id
@@ -517,7 +547,7 @@ function Reportar() {
               </div>
             )}
           </motion.div>
-        ) : (
+        ) : pestaña === 'seguimiento' ? (
           <motion.div
             key="seguimiento"
             initial={{ opacity: 0, y: 24 }}
@@ -650,6 +680,97 @@ function Reportar() {
                     )}
                   </div>
                 )}
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="manual"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -24 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          >
+            <div className="rounded-2xl p-px bg-gradient-to-br from-municipal-verde/40 via-transparent to-municipal-naranja/40">
+              <div className="rounded-[calc(1rem-1px)] bg-white/80 p-6 sm:p-8 shadow-xl backdrop-blur-xl dark:bg-municipal-negro/80">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-municipal-naranja">
+                      Mesa de ayuda
+                    </p>
+                    <h2 className="mt-1 text-2xl sm:text-3xl font-bold text-municipal-azul dark:text-municipal-crema">
+                      Manual
+                    </h2>
+                    <p className="mt-2 text-sm text-municipal-azul/70 dark:text-municipal-crema/60">
+                      Pasos para reportar un problema técnico.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="inline-flex w-fit items-center gap-2 rounded-full bg-municipal-azul px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform hover:scale-[1.02] print:hidden"
+                  >
+                    <FileDown size={16} />
+                    Descargar PDF
+                  </button>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <PasoManual n={1}>
+                    Completá los campos del formulario:
+                    <ul className="mt-1 list-inside list-disc space-y-0.5">
+                      <li>
+                        <strong>Nombre y apellido</strong> (solo letras, mínimo 2) ·{' '}
+                        <strong>Secretaría</strong> · <strong>Dirección/área</strong> ·{' '}
+                        <strong>Rol/cargo</strong>.
+                      </li>
+                      <li>
+                        <strong>Teléfono</strong> (opcional, solo dígitos de 5 a 20) y{' '}
+                        <strong>Categoría</strong>.
+                      </li>
+                      <li>
+                        <strong>Descripción</strong> (mínimo 20 caracteres): contá qué pasó, desde
+                        cuándo y qué intentaste.
+                      </li>
+                    </ul>
+                  </PasoManual>
+                  <FiguraManual
+                    src={capturaReporteForm}
+                    alt="Formulario de reporte completo"
+                    leyenda="Formulario de reporte completo"
+                  />
+                  <PasoManual n={2}>
+                    Tocá el botón <strong>Enviar solicitud</strong>.
+                  </PasoManual>
+                  <PasoManual n={3}>
+                    Guardá el <strong>código de seguimiento</strong> que aparece: podés{' '}
+                    <strong>copiarlo</strong> al portapapeles o <strong>descargarlo (.txt)</strong>.
+                    Es tu única forma de consultar el estado de la solicitud.
+                  </PasoManual>
+                  <FiguraManual
+                    src={capturaReporteCodigo}
+                    alt="Pantalla con el código de seguimiento"
+                    leyenda="Pantalla con el código de seguimiento"
+                  />
+                  <PasoManual n={4}>
+                    Para ver el estado, abrí la pestaña <strong>Hacer seguimiento</strong>, ingresá
+                    el código y tocá <strong>Buscar</strong>.
+                  </PasoManual>
+                  <FiguraManual
+                    src={capturaReporteSeguimiento}
+                    alt="Estado de la solicitud en Hacer seguimiento"
+                    leyenda="Estado de la solicitud en Hacer seguimiento"
+                  />
+                </div>
+
+                <div className="mt-6 flex items-start gap-2 rounded-xl bg-municipal-naranja/10 px-4 py-3 text-sm text-municipal-naranja">
+                  <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+                  <p>
+                    Mientras el técnico no responda, tu solicitud se va a mostrar como{' '}
+                    <strong>Pendiente</strong>. Cuando el técnico dé su respuesta, la vas a poder
+                    visualizar al final de <strong>Hacer seguimiento</strong>.
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
