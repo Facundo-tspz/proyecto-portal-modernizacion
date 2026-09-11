@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Congenial";
+  src: url("./assets/fonts/Congenial_Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Congenial";
+  src: url("./assets/fonts/Congenial_Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Congenial";
+  src: url("./assets/fonts/Congenial_Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* No hay archivo Semibold: el peso 600 usa el Bold (mismo familia). */
+@font-face {
+  font-family: "Congenial";
+  src: url("./assets/fonts/Congenial_Bold.woff2") format("woff2");
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     color-scheme: light;

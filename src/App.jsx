@@ -4,6 +4,7 @@ import PortalLayout from './layouts/PortalLayout'
 import Inicio from './pages/portal/Inicio'
 import QuienesSomos from './pages/portal/QuienesSomos'
 import Proyectos from './pages/portal/Proyectos'
+import Reportar from './pages/portal/Reportar'
 import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
 import Tickets from './pages/admin/Tickets'
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<Inicio />} />
           <Route path="/quienes-somos" element={<QuienesSomos />} />
           <Route path="/proyectos" element={<Proyectos />} />
+          <Route path="/reporte-tiket" element={<Reportar />} />
         </Route>
 
         <Route path="/mg-tinogasta/acceso" element={<Login />} />

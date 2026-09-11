@@ -4,19 +4,14 @@
 -- (banner), capacitaciones, noticias y tarjetas_enlace.
 -- Con seeds del contenido actual del home.
 -- Depende de: 0001 (define es_admin_o_editor).
+--
+-- RE-EJECUTABLE SIN PERDER DATOS: las tablas se crean con
+-- "if not exists" y los seeds son idempotentes (on conflict (id)).
+-- El contenido editado desde el panel admin NO se borra al re-ejecutar.
 -- ============================================================
 
--- ---------- Drops preventivos (para re-ejecutar sin errores) ----------
--- Se borran las tablas con CASCADE (elimina también sus triggers),
--- por lo que NO hace falta drop de triggers individuales.
-drop table if exists public.config_sitio cascade;
-drop table if exists public.avisos cascade;
-drop table if exists public.capacitaciones cascade;
-drop table if exists public.noticias cascade;
-drop table if exists public.tarjetas_enlace cascade;
-
 -- ---------- Tabla: config_sitio (textos del portal) ----------
-create table public.config_sitio (
+create table if not exists public.config_sitio (
   clave text primary key,
   valor text default '',
   tipo text not null default 'texto',
@@ -24,7 +19,7 @@ create table public.config_sitio (
 );
 
 -- ---------- Tabla: avisos (banner de noticias) ----------
-create table public.avisos (
+create table if not exists public.avisos (
   id uuid primary key default gen_random_uuid(),
   activo boolean not null default true,
   texto text not null default '',
@@ -35,7 +30,7 @@ create table public.avisos (
 );
 
 -- ---------- Tabla: capacitaciones ----------
-create table public.capacitaciones (
+create table if not exists public.capacitaciones (
   id uuid primary key default gen_random_uuid(),
   titulo text not null,
   leyenda text default '',
@@ -48,7 +43,7 @@ create table public.capacitaciones (
 );
 
 -- ---------- Tabla: noticias ----------
-create table public.noticias (
+create table if not exists public.noticias (
   id uuid primary key default gen_random_uuid(),
   titulo text not null,
   leyenda text default '',
@@ -61,7 +56,7 @@ create table public.noticias (
 );
 
 -- ---------- Tabla: tarjetas_enlace (accesos útiles) ----------
-create table public.tarjetas_enlace (
+create table if not exists public.tarjetas_enlace (
   id uuid primary key default gen_random_uuid(),
   icono text default '',
   titulo text not null,
@@ -84,10 +79,15 @@ begin
 end;
 $$;
 
+drop trigger if exists trg_avisos_updated on public.avisos;
 create trigger trg_avisos_updated before update on public.avisos for each row execute function public.set_updated_at_contenido();
+drop trigger if exists trg_capacitaciones_updated on public.capacitaciones;
 create trigger trg_capacitaciones_updated before update on public.capacitaciones for each row execute function public.set_updated_at_contenido();
+drop trigger if exists trg_noticias_updated on public.noticias;
 create trigger trg_noticias_updated before update on public.noticias for each row execute function public.set_updated_at_contenido();
+drop trigger if exists trg_tarjetas_updated on public.tarjetas_enlace;
 create trigger trg_tarjetas_updated before update on public.tarjetas_enlace for each row execute function public.set_updated_at_contenido();
+drop trigger if exists trg_config_updated on public.config_sitio;
 create trigger trg_config_updated before update on public.config_sitio for each row execute function public.set_updated_at_contenido();
 
 -- ---------- RLS: contenido ----------
@@ -134,35 +134,30 @@ create policy "config_write" on public.config_sitio for all using (public.es_adm
 -- ============================================================
 
 -- Aviso (UNA sola fila, el código usa .single())
-insert into public.avisos (activo, texto, link, imagen_url) values
-  (true, 'Nueva capacitación de herramientas digitales. Inscripciones abiertas en la Dirección de Modernización.', '', '/images/banner-noticia/banner-seismiles.webp')
-on conflict do nothing;
+insert into public.avisos (id, activo, texto, link, imagen_url) values
+  ('00000000-0000-0000-0000-000000000010', true, 'Nueva capacitación de herramientas digitales. Inscripciones abiertas en la Dirección de Modernización.', '', '/images/banner-noticia/banner-seismiles.webp')
+on conflict (id) do nothing;
 
-insert into public.capacitaciones (titulo, leyenda, imagen_url, link, orden) values
-  ('Taller de Excel Avanzado', 'Plantillas, tablas dinámicas y automatización de reportes para la gestión municipal.', '/images/banner-noticia/banner-seismiles.webp', '', 1),
-  ('Firma Digital Certificada', 'Trámites 100% digitales con firma electrónica para el personal de la municipalidad.', '/images/banner-noticia/banner-seismiles.webp', '', 2),
-  ('Herramientas de Inteligencia Artificial', 'Cómo aprovechar la IA en tareas administrativas cotidianas del área.', '/images/banner-noticia/banner-seismiles.webp', '', 3),
-  ('Gestión de Redes Sociales', 'Comunicación oficial para oficinas públicas: contenido, alcance y buen uso.', '/images/banner-noticia/banner-seismiles.webp', '', 4),
-  ('Ciberseguridad Básica', 'Contraseñas seguras, correos fraudulentos y buenas prácticas en equipos del estado.', '/images/banner-noticia/banner-seismiles.webp', '', 5)
-on conflict do nothing;
+insert into public.capacitaciones (id, titulo, leyenda, imagen_url, link, orden) values
+  ('00000000-0000-0000-0000-000000000021', 'Taller de Excel Avanzado', 'Plantillas, tablas dinámicas y automatización de reportes para la gestión municipal.', '/images/banner-noticia/banner-seismiles.webp', '', 1),
+  ('00000000-0000-0000-0000-000000000022', 'Firma Digital Certificada', 'Trámites 100% digitales con firma electrónica para el personal de la municipalidad.', '/images/banner-noticia/banner-seismiles.webp', '', 2),
+  ('00000000-0000-0000-0000-000000000023', 'Herramientas de Inteligencia Artificial', 'Cómo aprovechar la IA en tareas administrativas cotidianas del área.', '/images/banner-noticia/banner-seismiles.webp', '', 3),
+  ('00000000-0000-0000-0000-000000000024', 'Gestión de Redes Sociales', 'Comunicación oficial para oficinas públicas: contenido, alcance y buen uso.', '/images/banner-noticia/banner-seismiles.webp', '', 4),
+  ('00000000-0000-0000-0000-000000000025', 'Ciberseguridad Básica', 'Contraseñas seguras, correos fraudulentos y buenas prácticas en equipos del estado.', '/images/banner-noticia/banner-seismiles.webp', '', 5)
+on conflict (id) do nothing;
 
-insert into public.noticias (titulo, leyenda, imagen_url, link, orden) values
-  ('IA generativa, ¿qué es y cómo usarla en trámites?', 'Un repaso simple de las herramientas de IA y sus usos en oficinas públicas.', '/images/banner-noticia/banner-seismiles.webp', '', 1),
-  ('Lanzamiento de la nueva web departamental', 'Ya podés consultar la información de las secretarías desde un solo lugar.', '/images/banner-noticia/banner-seismiles.webp', '', 2)
-on conflict do nothing;
+insert into public.noticias (id, titulo, leyenda, imagen_url, link, orden) values
+  ('00000000-0000-0000-0000-000000000031', 'IA generativa, ¿qué es y cómo usarla en trámites?', 'Un repaso simple de las herramientas de IA y sus usos en oficinas públicas.', '/images/banner-noticia/banner-seismiles.webp', '', 1),
+  ('00000000-0000-0000-0000-000000000032', 'Lanzamiento de la nueva web departamental', 'Ya podés consultar la información de las secretarías desde un solo lugar.', '/images/banner-noticia/banner-seismiles.webp', '', 2)
+on conflict (id) do nothing;
 
-insert into public.tarjetas_enlace (icono, titulo, leyenda, link, activo, orden) values
-  ('file-text', 'Certificado Digital', 'Gestioná tu certificado digital y firma electrónica desde acá.', '', true, 1),
-  ('calendar-days', 'Calendario de Feriados', 'Feriados, conmemoraciones y días no laborables de la provincia.', '', true, 2),
-  ('newspaper', 'Boletín Municipal', 'Las ordenanzas y resoluciones oficiales de la municipalidad.', '', true, 3)
-on conflict do nothing;
+insert into public.tarjetas_enlace (id, icono, titulo, leyenda, link, activo, orden) values
+  ('00000000-0000-0000-0000-000000000041', 'file-text', 'Certificado Digital', 'Gestioná tu certificado digital y firma electrónica desde acá.', '', true, 1),
+  ('00000000-0000-0000-0000-000000000042', 'calendar-days', 'Calendario de Feriados', 'Feriados, conmemoraciones y días no laborables de la provincia.', '', true, 2),
+  ('00000000-0000-0000-0000-000000000043', 'newspaper', 'Boletín Municipal', 'Las ordenanzas y resoluciones oficiales de la municipalidad.', '', true, 3)
+on conflict (id) do nothing;
 
 insert into public.config_sitio (clave, valor, tipo) values
-  -- Banner
-  ('banner_activo', 'true', 'booleano'),
-  ('banner_texto', 'Nueva capacitación de herramientas digitales. Inscripciones abiertas en la Dirección de Modernización.', 'texto'),
-  ('banner_link', '', 'texto'),
-  ('banner_imagen', '/images/banner-noticia/banner-seismiles.webp', 'texto'),
   -- Somos Modernización (home)
   ('somos_overline', 'El área', 'texto'),
   ('somos_titulo', 'Somos el Área de Modernización', 'texto'),

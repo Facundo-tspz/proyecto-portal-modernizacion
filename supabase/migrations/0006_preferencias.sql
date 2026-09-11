@@ -1,32 +1,13 @@
 -- ============================================================
 -- 0006_preferencias.sql
--- Preferencias del panel: tema por usuario, gestión de sesiones
--- (revocar fuerza a re-loguearse) y reinicio de contraseña por admin.
+-- Preferencias del panel: gestión de sesiones (revocar fuerza
+-- a re-loguearse) y reinicio de contraseña por admin.
 -- Depende de: 0001 (rol_usuario, es_admin), 0004, 0005.
 -- ============================================================
-
--- Preferencia de tema por usuario (claro/oscuro)
-alter table public.perfiles add column if not exists tema text;
 
 -- ============================================================
 -- RPCs "self": el propio usuario edita su perfil/preferencia
 -- ============================================================
-
-create or replace function public.cambiar_mi_tema(p_tema text)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  update public.perfiles
-     set tema = p_tema
-   where id = auth.uid();
-end;
-$$;
-
-revoke all on function public.cambiar_mi_tema(text) from public;
-grant execute on function public.cambiar_mi_tema(text) to authenticated;
 
 create or replace function public.actualizar_mi_nombre(p_nombre text)
 returns void

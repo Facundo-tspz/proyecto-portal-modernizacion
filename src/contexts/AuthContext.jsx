@@ -134,10 +134,33 @@ export function AuthProvider({ children }) {
   }
 
   async function iniciarSesion(email, password) {
+    const emailNormalizado = email.trim().toLowerCase()
+
+    try {
+      const { data: bloqueo } = await supabase.rpc('verificar_bloqueo_login', {
+        p_email: emailNormalizado,
+      })
+      if (bloqueo?.bloqueado) {
+        const err = new Error(
+          `Demasiados intentos fallidos. Volvé a intentar en ${bloqueo.minutos_restantes} min.`
+        )
+        err.code = 'bloqueado'
+        return { error: err }
+      }
+    } catch {
+      // si la verificación falla por red, se permite el intento
+    }
+
     const resultado = await supabase.auth.signInWithPassword({ email, password })
     if (resultado.error) {
+      supabase
+        .rpc('registrar_intento_login', { p_email: emailNormalizado, p_exitoso: false })
+        .then(() => {})
       return resultado
     }
+    supabase
+      .rpc('registrar_intento_login', { p_email: emailNormalizado, p_exitoso: true })
+      .then(() => {})
     marcarActividad()
     const perfil = await cargarPerfil(resultado.data.user)
     if (!perfil) {

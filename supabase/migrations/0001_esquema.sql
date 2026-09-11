@@ -5,6 +5,11 @@
 -- funciones helper RLS (que referencian las tablas) y por último
 -- las funciones de negocio, triggers y políticas.
 -- Incluye DROPS preventivos para poder re-ejecutar sin errores.
+--
+-- ⚠️ ESQUEMA ONE-SHOT: los DROPS preventivos están pensados para
+-- el desarrollo. NO re-ejecutar esta migración sobre una BD con
+-- datos reales (perfiles, tickets, proyectos editados): los borra
+-- todos. El seed de proyectos SÍ es idempotente (on conflict (id)).
 -- ============================================================
 
 -- ---------- Extensiones ----------
@@ -343,8 +348,8 @@ create policy "proyectos_write"
 -- ============================================================
 -- Seed: proyectos iniciales
 -- ============================================================
-insert into public.proyectos (nombre, descripcion, imagen_url, estado, categoria, orden) values
-  ('Portal de Modernización', 'La plataforma institucional que estás viendo: información, capacitaciones y gestión de incidencias.', '/images/banner-noticia/banner-seismiles.webp', 'en_desarrollo', 'portal', 1),
-  ('Red WiFi Municipal', 'Conectividad gratuita en espacios públicos y oficinas de la municipalidad.', '/images/banner-noticia/banner-seismiles.webp', 'activo', 'infraestructura', 2),
-  ('Gestión de Trámites Digitales', 'Digitalización de trámites municipales para reducir tiempos de espera.', '/images/banner-noticia/banner-seismiles.webp', 'en_desarrollo', 'digital', 3)
-on conflict do nothing;
+insert into public.proyectos (id, nombre, descripcion, imagen_url, estado, categoria, orden) values
+  ('00000000-0000-0000-0000-000000000001', 'Portal de Modernización', 'La plataforma institucional que estás viendo: información, capacitaciones y gestión de incidencias.', '/images/banner-noticia/banner-seismiles.webp', 'en_desarrollo', 'portal', 1),
+  ('00000000-0000-0000-0000-000000000002', 'Red WiFi Municipal', 'Conectividad gratuita en espacios públicos y oficinas de la municipalidad.', '/images/banner-noticia/banner-seismiles.webp', 'activo', 'infraestructura', 2),
+  ('00000000-0000-0000-0000-000000000003', 'Gestión de Trámites Digitales', 'Digitalización de trámites municipales para reducir tiempos de espera.', '/images/banner-noticia/banner-seismiles.webp', 'en_desarrollo', 'digital', 3)
+on conflict (id) do nothing;
