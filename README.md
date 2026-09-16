@@ -449,50 +449,44 @@ La aplicación soporta ambos modos conmutables por el usuario:
 ```
 Proyecto-Modernizacion/
 ├── public/
-│   ├── favicon.ico
-│   └── logo-municipal/
-│       ├── logo-positivo.png
-│       └── logo-negativo.png
+│   ├── _redirects            # Reglas de redirección de Netlify
+│   ├── apple-touch-icon.png
+│   ├── favicon.png
+│   └── images/
+│       ├── banner-noticia/
+│       │   └── banner-seismiles.webp
+│       └── logo/
+│           └── logo-negativo.png
 ├── src/
 │   ├── assets/
-│   │   └── imagenes/
+│   │   ├── fonts/            # Tipografía institucional (Congenial woff2)
+│   │   └── manual/           # Capturas de los manuales de usuario (panel + reporte)
 │   ├── components/
-│   │   ├── comunes/          # Botones, Cards, Modal, Navbar, Footer, etc.
-│   │   ├── portal/           # Componentes del módulo público
-│   │   ├── helpdesk/         # Componentes del sistema de tickets
-│   │   └── admin/            # Componentes del panel administrativo
-│   ├── contexts/
-│   │   └── ThemeContext.jsx   # Contexto del modo oscuro/claro
-│   ├── hooks/
-│   │   ├── useAuth.js        # Hook de autenticación
-│   │   ├── useTickets.js     # Hook de lógica de tickets
-│   │   └── useNotifications.js # Hook de notificaciones por email
-│   ├── layouts/
-│   │   ├── PortalLayout.jsx  # Layout del portal público
-│   │   └── AdminLayout.jsx   # Layout del panel admin
+│   │   ├── admin/            # Componentes del panel (RutaProtegida, CropImageModal, editores/)
+│   │   ├── comunes/          # Footer, Navbar, ScrollToTop
+│   │   └── portal/           # BannerNoticias, DestacadosCarrusel, SomosModernizacion, TarjetasEnlace
+│   ├── contexts/             # AuthContext (sesión), ThemeContext (claro/oscuro)
+│   ├── hooks/                # useConfigSitio
+│   ├── layouts/              # PortalLayout (público), AdminLayout (panel)
+│   ├── lib/                  # supabase.js (cliente), storage.js, url.js
 │   ├── pages/
-│   │   ├── portal/           # Inicio, QuienesSomos, Proyectos, Capacitaciones (enlace externo)
-│   │   ├── helpdesk/         # FormularioTicket (ruta oculta), ConsultaTicket, ConfirmacionTicket
-│   │   └── admin/            # Dashboard, GestionTickets, GestionContenido, GestionUsuarios, Login
-│   ├── services/
-│   │   ├── api.js            # Conexión con backend (Supabase o custom)
-│   │   └── emailService.js   # Servicio de envío de emails (notificaciones)
-│   ├── styles/
-│   │   └── theme.js          # Paleta de colores y variables de tema
-│   ├── utils/
-│   │   ├── generateCode.js   # Generador de código alfanumérico
-│   │   ├── imageConverter.js # Conversión de imágenes a WebP
-│   │   └── downloadQR.js    # Conversión de SVG a PNG y descarga
+│   │   ├── admin/            # Contenido, Dashboard, Login, Manual, Preferencias, Tickets, Usuarios
+│   │   └── portal/           # Inicio, Proyectos, QuienesSomos, Reportar (incluye seguimiento)
 │   ├── App.jsx               # Router principal
+│   ├── index.css             # Estilos globales (Tailwind + impresión)
 │   └── main.jsx              # Punto de entrada
+├── supabase/
+│   ├── migrations/           # Historial aplicado 0001–0012 (BD en producción)
+│   └── migraciones-depuradas/ # Estado final consolidado (solo BD nueva, en orden 01→02→03)
 ├── docs/
 │   └── referencia/
 │       └── identidad-visual.jpg
-├── .env.example           # Variables de entorno de ejemplo (sin valores reales)
-├── .eslintrc.cjs
+├── .env.example              # Variables de entorno de ejemplo (sin valores reales)
 ├── .gitignore
+├── .oxlintrc.json
 ├── index.html
 ├── package.json
+├── package-lock.json
 ├── postcss.config.js
 ├── tailwind.config.js
 ├── vite.config.js
